@@ -1,0 +1,227 @@
+openapi: 3.0.0
+info:
+  title: API Unit
+  version: 1.0.0
+  description: Endpoints para integração com a API da UNIT
+
+tags:
+  - name: Operações
+  - name: Consulta de Dívidas
+
+paths:
+  /dinheirow/emiteOperacao:
+    post:
+      tags:
+        - Operações
+      summary: Emite operação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cliente_data:
+                  type: object
+                  properties:
+                    cpf: { type: string }
+                    email: { type: string, format: email }
+                    phone: { type: string }
+                    name: { type: string }
+                    gender: { type: string }
+                    political_exposition: { type: string }
+                    city: { type: string }
+                    state: { type: string }
+                    number_home: { type: string }
+                    street: { type: string }
+                    complement: { type: string }
+                    cep: { type: string }
+                    bairro: { type: string }
+                    birth_date: { type: string, format: date }
+                    mother_name: { type: string }
+                    nationality: { type: string }
+                    marital_status: { type: string }
+                    document_type: { type: string }
+                    document_date: { type: string, format: date }
+                    document_number: { type: string }
+                financial_info:
+                  type: object
+                  properties:
+                    interest_type: { type: string }
+                    first_due_date: { type: string, format: date }
+                    disbursement_date: { type: string, format: date }
+                    fine_configuration:
+                      type: object
+                      properties:
+                        monthly_rate: { type: number, format: float }
+                        interest_base: { type: string }
+                        contract_fine_rate: { type: number, format: float }
+                    credit_operation_type: { type: string }
+                    interest_grace_period: { type: integer }
+                    monthly_interest_rate: { type: number, format: float }
+                    installment_face_value: { type: number, format: float }
+                    type_operation: { type: string }
+                    limit_days_to_disburse: { type: integer }
+                    number_of_installments: { type: integer }
+                    principal_grace_period: { type: integer }
+                    purchaser_document_number: { type: string }
+                    employer_document_number: { type: string }
+                    registration_number: { type: string }
+                    collateral_type: { type: string }
+                disbursement_bank_accounts:
+                  type: object
+                  properties:
+                    typePix: { type: string }
+                    name: { type: string }
+                    bank_code: { type: string }
+                    account_digit: { type: string }
+                    branch_number: { type: string }
+                    account_number: { type: string }
+                    document_number: { type: string }
+                    transfer_method: { type: string }
+                    percentage_receivable: { type: integer }
+                    pixKey: { type: string }
+      responses:
+        '200':
+          description: Operação criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Operação criada com sucesso
+        '400':
+          description: Erro de validação ou dados inválidos
+        '500':
+          description: Erro interno no servidor
+
+  /debt:
+    get:
+      tags:
+        - Consulta de Dívidas
+      summary: Consulta de dívida por CPF
+      description: |
+        Consulta as informações de dívida vinculadas a um CPF específico.
+        O CPF deve ser enviado como parâmetro de consulta na URL.
+
+        Exemplo:
+        GET /debt?cpf=12345678900
+      parameters:
+        - name: cpf
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "12345678900"
+          description: CPF do titular a ser consultado (somente números).
+      responses:
+        '200':
+          description: Consulta realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        borrower:
+                          type: object
+                          properties:
+                            document_number:
+                              type: string
+                              example: "68394265057"
+                            name:
+                              type: string
+                              example: "Xuxa Meneguel"
+                        contract_fee_amount:
+                          type: number
+                          example: 5.56
+                        installments:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              bank_slip_key:
+                                type: string
+                                nullable: true
+                              calendar_days:
+                                type: integer
+                                example: 57
+                              due_date:
+                                type: string
+                                format: date
+                                example: "2020-09-30"
+                              due_principal:
+                                type: number
+                                example: -0.00217819
+                              fine_amount:
+                                type: number
+                                nullable: true
+                              has_interest:
+                                type: boolean
+                                example: true
+                              installment_key:
+                                type: string
+                                example: "28eb5907-ed25-4a86-bb9d-b6dc944f13df"
+                              installment_number:
+                                type: integer
+                                example: 1
+                              installment_status:
+                                type: string
+                                example: "opened"
+                              installment_type:
+                                type: string
+                                example: "principal"
+                              paid_amount:
+                                type: number
+                                example: 0
+                              post_fixed_amount:
+                                type: number
+                                example: 0
+                              pre_fixed_amount:
+                                type: number
+                                example: 268.75782181
+                              principal_amortization_amount:
+                                type: number
+                                example: 1111.9
+                              tax_amount:
+                                type: number
+                                example: 0
+                              total_amount:
+                                type: number
+                                example: 1380.66
+                              workdays:
+                                type: integer
+                                example: 40
+                        operation_key:
+                          type: string
+                          example: "7986dcc7-4331-478f-af47-adfbdf7f4a36"
+                        status:
+                          type: string
+                          example: "opened"
+                  pagination:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      next_page:
+                        type: string
+                        nullable: true
+                        example: null
+                      rows_per_page:
+                        type: integer
+                        example: 100
+                      total_pages:
+                        type: integer
+                        example: 1
+                      total_rows:
+                        type: integer
+                        example: 55
+        '400':
+          description: CPF inválido ou formato incorreto
