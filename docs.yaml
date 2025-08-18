@@ -124,18 +124,34 @@ paths:
               schema:
                 type: object
                 required:
+                  - due_installments
+                  - due_to_pay
                   - issue_total_amount
                   - num_contracts
+                  - total_installments
                 properties:
+                  due_installments:
+                    type: integer
+                    example: 12
+                    description: Quantidade de parcelas atualmente em aberto.
+                  due_to_pay:
+                    type: number
+                    format: float
+                    example: 1231.93
+                    description: Valor total ainda a pagar (somente parcelas em aberto).
                   issue_total_amount:
                     type: number
                     format: float
-                    example: 1541.76
-                    description: Soma total das dívidas encontradas para o CPF.
+                    example: 1231.93
+                    description: Valor total do débito apurado na consulta.
                   num_contracts:
                     type: integer
-                    example: 2
-                    description: Quantidade de contratos retornados para o CPF.
+                    example: 1
+                    description: Quantidade de contratos relacionados ao CPF.
+                  total_installments:
+                    type: integer
+                    example: 12
+                    description: Total de parcelas do(s) contrato(s) consultado(s).
         '400':
           description: CPF inválido ou formato incorreto
         '500':
