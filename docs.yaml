@@ -49,4 +49,122 @@ paths:
                   properties:
                     interest_type: { type: string }
                     first_due_date: { type: string, format: date }
-                    di
+                    disbursement_date: { type: string, format: date }
+                    fine_configuration:
+                      type: object
+                      properties:
+                        monthly_rate: { type: number, format: float }
+                        interest_base: { type: string }
+                        contract_fine_rate: { type: number, format: float }
+                    credit_operation_type: { type: string }
+                    interest_grace_period: { type: integer }
+                    monthly_interest_rate: { type: number, format: float }
+                    installment_face_value: { type: number, format: float }
+                    type_operation: { type: string }
+                    limit_days_to_disburse: { type: integer }
+                    number_of_installments: { type: integer }
+                    principal_grace_period: { type: integer }
+                    purchaser_document_number: { type: string }
+                    employer_document_number: { type: string }
+                    registration_number: { type: string }
+                    collateral_type: { type: string }
+                disbursement_bank_accounts:
+                  type: object
+                  properties:
+                    typePix: { type: string }
+                    name: { type: string }
+                    bank_code: { type: string }
+                    account_digit: { type: string }
+                    branch_number: { type: string }
+                    account_number: { type: string }
+                    document_number: { type: string }
+                    transfer_method: { type: string }
+                    percentage_receivable: { type: integer }
+                    pixKey: { type: string }
+      responses:
+        '200':
+          description: Operação criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Operação criada com sucesso
+        '400':
+          description: Erro de validação ou dados inválidos
+        '500':
+          description: Erro interno no servidor
+
+  /debt:
+    get:
+      tags:
+        - Consulta de Dívidas
+      summary: Consulta de dívida por CPF
+      description: |
+        Consulta as informações de dívida vinculadas a um CPF específico.
+        O CPF deve ser enviado como parâmetro de consulta na URL.
+
+        Exemplo:
+        GET /debt?cpf=12345678900
+      parameters:
+        - name: cpf
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "12345678900"
+          description: CPF do titular a ser consultado (somente números).
+      responses:
+        '200':
+          description: Consulta realizada com sucesso
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required:
+                      - due_installments
+                      - due_to_pay
+                      - issue_total_amount
+                      - num_contracts
+                      - total_installments
+                    properties:
+                      due_installments:
+                        type: integer
+                        description: Quantidade de parcelas atualmente em aberto.
+                      due_to_pay:
+                        type: number
+                        format: float
+                        description: Valor total ainda a pagar (somente parcelas em aberto).
+                      issue_total_amount:
+                        type: number
+                        format: float
+                        description: Valor total do débito apurado na consulta.
+                      num_contracts:
+                        type: integer
+                        description: Quantidade de contratos relacionados ao CPF.
+                      total_installments:
+                        type: integer
+                        description: Total de parcelas do(s) contrato(s) consultado(s).
+                  - type: object
+                    properties:
+                      mensagem:
+                        type: string
+                        description: Retorno quando o CPF não possui contratos ou é inválido.
+              examples:
+                com_divida:
+                  summary: CPF com dívidas
+                  value:
+                    due_installments: 12
+                    due_to_pay: 1231.93
+                    issue_total_amount: 1231.93
+                    num_contracts: 1
+                    total_installments: 12
+                sem_contrato:
+                  summary: CPF sem contratos (ou inexistente para a base)
+                  value:
+                    mensagem: "Não foram encontrados contratos para esse CPF"
+        '500':
+          description: Erro interno no servidor
