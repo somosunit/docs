@@ -1,65 +1,52 @@
-  /debt:
-    get:
-      tags:
-        - Consulta de Dívidas
-      summary: Consulta de dívida por CPF
-      description: |
-        Consulta as informações de dívida vinculadas a um CPF específico.
-        O CPF deve ser enviado como parâmetro de consulta na URL.
+openapi: 3.0.0
+info:
+  title: API Unit
+  version: 1.0.0
+  description: Endpoints para integração com a API da UNIT
 
-        Exemplo:
-        GET /debt?cpf=12345678900
-      parameters:
-        - name: cpf
-          in: query
-          required: true
-          schema:
-            type: string
-            example: "12345678900"
-          description: CPF do titular a ser consultado (somente números).
-      responses:
-        '200':
-          description: Consulta realizada com sucesso
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - type: object
-                    properties:
-                      due_installments:
-                        type: integer
-                        description: Quantidade de parcelas atualmente em aberto.
-                      due_to_pay:
-                        type: number
-                        format: float
-                        description: Valor total ainda a pagar (somente parcelas em aberto).
-                      issue_total_amount:
-                        type: number
-                        format: float
-                        description: Valor total do débito apurado na consulta.
-                      num_contracts:
-                        type: integer
-                        description: Quantidade de contratos relacionados ao CPF.
-                      total_installments:
-                        type: integer
-                        description: Total de parcelas do(s) contrato(s) consultado(s).
-                  - type: object
-                    properties:
-                      mensagem:
-                        type: string
-                        description: Retorno quando o CPF não possui contratos ou é inválido.
-              examples:
-                com_divida:
-                  summary: CPF com dívidas
-                  value:
-                    due_installments: 12
-                    due_to_pay: 1231.93
-                    issue_total_amount: 1231.93
-                    num_contracts: 1
-                    total_installments: 12
-                sem_contrato:
-                  summary: CPF sem contratos
-                  value:
-                    mensagem: "Não foram encontrados contratos para esse CPF"
-        '500':
-          description: Erro interno no servidor
+tags:
+  - name: Operações
+  - name: Consulta de Dívidas
+
+paths:
+  /dinheirow/emiteOperacao:
+    post:
+      tags:
+        - Operações
+      summary: Emite operação
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cliente_data:
+                  type: object
+                  properties:
+                    cpf: { type: string }
+                    email: { type: string, format: email }
+                    phone: { type: string }
+                    name: { type: string }
+                    gender: { type: string }
+                    political_exposition: { type: string }
+                    city: { type: string }
+                    state: { type: string }
+                    number_home: { type: string }
+                    street: { type: string }
+                    complement: { type: string }
+                    cep: { type: string }
+                    bairro: { type: string }
+                    birth_date: { type: string, format: date }
+                    mother_name: { type: string }
+                    nationality: { type: string }
+                    marital_status: { type: string }
+                    document_type: { type: string }
+                    document_date: { type: string, format: date }
+                    document_number: { type: string }
+                financial_info:
+                  type: object
+                  properties:
+                    interest_type: { type: string }
+                    first_due_date: { type: string, format: date }
+                    di
