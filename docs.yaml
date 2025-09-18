@@ -168,3 +168,113 @@ paths:
                     mensagem: "Não foram encontrados contratos para esse CPF"
         '500':
           description: Erro interno no servidor
+
+  /signVinculo:
+    post:
+      tags:
+        - Operações
+      summary: Assina vínculo
+      description: Gerar documentação para inserção de assinatura de termos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cpf: { type: string, description: CPF do titular (somente números) }
+                email: { type: string, format: email }
+                name: { type: string }
+                phone: { type: string }
+                device: { type: string }
+                public_ip: { type: string }
+                signed: { type: boolean }
+                source: { type: string, example: "dinherow" }
+                collaborator: { type: string, example: "Dinherow" }
+                key: { type: string }
+                start_datetime: { type: string, format: date-time }
+                signed_at: { type: string, format: date-time }
+                status: { type: string }
+      responses:
+        '200':
+          description: Vínculo assinado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - answer_api_request
+                  - collaborator
+                  - cpf
+                  - device
+                  - email
+                  - key
+                  - name
+                  - phone
+                  - public_ip
+                  - signed
+                  - signed_at
+                  - source
+                  - start_datetime
+                  - status
+                properties:
+                  answer_api_request:
+                    type: object
+                    properties:
+                      employment_relationships_inquiry_key:
+                        type: string
+                      employment_relationships_inquiry_status:
+                        type: string
+                    required:
+                      - employment_relationships_inquiry_key
+                      - employment_relationships_inquiry_status
+                  collaborator: { type: string }
+                  cpf: { type: string }
+                  device: { type: string }
+                  email: { type: string, format: email }
+                  key: { type: string }
+                  name: { type: string }
+                  phone: { type: string }
+                  public_ip: { type: string }
+                  signed: { type: boolean }
+                  signed_at: { type: string, format: date-time }
+                  source: { type: string }
+                  start_datetime: { type: string, format: date-time }
+                  status: { type: string }
+              examples:
+                sucesso:
+                  summary: Exemplo de sucesso
+                  value:
+                    answer_api_request:
+                      employment_relationships_inquiry_key: "ebc45cc3-9cb1-42eb-bd21-2dbe55425c13"
+                      employment_relationships_inquiry_status: "pending_authorization"
+                    collaborator: "Dinherow"
+                    cpf: ""
+                    device: ""
+                    email: ""
+                    key: ""
+                    name: ""
+                    phone: ""
+                    public_ip: ""
+                    signed: true
+                    signed_at: "2025-09-18T18:53:51.467706Z"
+                    source: "dinherow"
+                    start_datetime: "2025-09-18T18:53:51.467706Z"
+                    status: ""
+        '400':
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datails:
+                    type: string
+                  error:
+                    type: string
+              examples:
+                invalido:
+                  summary: Exemplo de erro de validação
+                  value:
+                    datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
+                    error: "Payload Invalido"
