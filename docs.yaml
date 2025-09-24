@@ -245,22 +245,9 @@ paths:
                 sucesso:
                   summary: Exemplo de sucesso
                   value:
-                    answer_api_request:
-                      employment_relationships_inquiry_key: "ebc45cc3-9cb1-42eb-bd21-2dbe55425c13"
-                      employment_relationships_inquiry_status: "pending_authorization"
-                    collaborator: "Dinherow"
-                    cpf: ""
-                    device: ""
-                    email: ""
-                    key: ""
-                    name: ""
-                    phone: ""
-                    public_ip: ""
-                    signed: true
-                    signed_at: "2025-09-18T18:53:51.467706Z"
-                    source: "dinherow"
-                    start_datetime: "2025-09-18T18:53:51.467706Z"
-                    status: ""
+                    employment_relationships_inquiry_key: "ebc45cc3-9cb1-42eb-bd21-2dbe55425c13"
+                    employment_relationships_inquiry_status: "pending_authorization"
+
         '400':
           description: Requisição inválida
           content:
@@ -278,3 +265,4 @@ paths:
                   value:
                     datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
                     error: "Payload Invalido"
+
