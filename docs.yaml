@@ -169,6 +169,391 @@ paths:
         '500':
           description: Erro interno no servidor
 
+  /checkElegibility:
+    get:
+      tags:
+        - Elegibilidade
+      summary: Verifica elegibilidade por CPF, data de nascimento e valor do débito
+      description: |
+        Retorna se o CPF é elegível com base em data de nascimento e valor do débito (issue_amount).
+
+        Exemplo:
+        GET /checkElegibility?cpf=12345678900&birthDate=1990-01-01&issue_amount=1500.00
+      parameters:
+        - name: cpf
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "12345678900"
+          description: CPF do titular (somente números).
+        - name: birthDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "1990-01-01"
+          description: Data de nascimento no formato YYYY-MM-DD.
+        - name: issue_amount
+          in: query
+          required: true
+          schema:
+            type: number
+            format: float
+            example: 1500.00
+          description: Valor total do débito considerado para a elegibilidade.
+      responses:
+        '200':
+          description: Consulta de elegibilidade realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - eligible
+                properties:
+                  eligible:
+                    type: boolean
+                    description: Indica se é elegível.
+                  reason:
+                    type: string
+                    nullable: true
+                    description: Código/razão técnica de inelegibilidade (quando houver).
+                  reason_translated:
+                    type: string
+                    nullable: true
+                    description: Texto legível da razão de inelegibilidade (quando houver).
+              examples:
+                elegivel:
+                  summary: CPF elegível
+                  value:
+                    eligible: true
+                    reason: null
+                    reason_translated: null
+                inelegivel:
+                  summary: CPF inelegível
+                  value:
+                    eligible: false
+                    reason: "MIN_AGE"
+                    reason_translated: "Idade mínima não atendida"
+        '400':
+          description: Parâmetros ausentes ou inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+              examples:
+                falta_cpf:
+                  summary: Falta CPF
+                  value: { "erro": "Parâmetro 'cpf' é obrigatório" }
+                falta_birthdate:
+                  summary: Falta birthDate
+                  value: { "erro": "Parâmetro 'birthDate' é obrigatório" }
+                falta_issue_amount:
+                  summary: Falta issue_amount
+                  value: { "erro": "Parâmetro 'issueAmount' é obrigatório" }
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+
+  /checkInsurance:
+    get:
+      tags:
+        - Seguro (Insurance)
+      summary: Consulta informações de seguro por chave de dívida
+      description: |
+        Retorna dados de apólice/seguro vinculados à dívida informada.
+
+        Exemplo:
+        GET /checkInsurance?debtKey=5ae2c008-44c1-4435-bbfa-094a4b11d962
+      parameters:
+        - name: debtKey
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "5ae2c008-44c1-4435-bbfa-094a4b11d962"
+          description: Chave da dívida (debtKey) para consulta.
+      responses:
+        '200':
+          description: Consulta de seguro realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - pagination
+                properties:
+                  data:
+                    type: array
+                    description: Lista de apólices/seguros vinculados.
+                    items:
+                      type: object
+                      required:
+                        - insurance_premium_key
+                        - status
+                        - credit_operation_key
+                        - contract_number
+                        - insurance_date
+                        - term_start_date
+                        - term_end_date
+                        - insurance_amount
+                        - operation_amount
+                        - customer
+                        - covers
+                      properties:
+                        insurance_premium_key:
+                          type: string
+                        status:
+                          type: string
+                          example: "active"
+                        credit_operation_key:
+                          type: string
+                        disbursement_key:
+                          type: string
+                          nullable: true
+                        contract_number:
+                          type: string
+                        requester_key:
+                          type: string
+                        insurance_policy_document_key:
+                          type: string
+                        insurance_date:
+                          type: string
+                          format: date
+                        term_start_date:
+                          type: string
+                          format: date
+                        term_end_date:
+                          type: string
+                          format: date
+                        insurance_amount:
+                          type: number
+                          format: float
+                        operation_amount:
+                          type: number
+                          format: float
+                        customer:
+                          type: object
+                          required: [customer_key, document_number, name]
+                          properties:
+                            customer_key: { type: string }
+                            document_number: { type: string }
+                            name: { type: string }
+                            birth_date:
+                              type: string
+                              format: date
+                              nullable: true
+                            email:
+                              type: string
+                              format: email
+                              nullable: true
+                            phone:
+                              type: object
+                              nullable: true
+                              properties:
+                                country_code: { type: string }
+                                area_code: { type: string }
+                                number: { type: string }
+                            address:
+                              type: object
+                              nullable: true
+                              properties:
+                                postal_code: { type: string }
+                                state: { type: string }
+                                city: { type: string }
+                                neighborhood: { type: string }
+                                street: { type: string }
+                                number: { type: string }
+                                complement: { type: string }
+                        covers:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              cover_amount:
+                                type: number
+                                format: float
+                              cover_type:
+                                type: string
+                                example: "accidental_death"
+                              cover_prize_amount:
+                                type: number
+                                format: float
+                        policy_number:
+                          type: string
+                        prize_number:
+                          type: string
+                        insurance_premium_net_amount:
+                          type: number
+                          format: float
+                        iof_amount:
+                          type: number
+                          format: float
+                  pagination:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      next_page: { type: integer }
+                      rows_per_page: { type: integer }
+              examples:
+                sucesso:
+                  summary: Retorno com uma apólice
+                  value:
+                    data:
+                      - insurance_premium_key: "e4fe84e3-cc71-481b-87ea-8a07f7d69079"
+                        status: "active"
+                        credit_operation_key: "5ae2c008-44c1-4435-bbfa-094a4b11d962"
+                        disbursement_key: "bd0ea133-ff47-4a21-a3e6-24186e5e2fc1"
+                        contract_number: "4069550961/QIT"
+                        requester_key: "1040ce22-aeac-4728-82da-d1f22c33873f"
+                        insurance_policy_document_key: "9990ce22-aeac-4728-82da-d1f22c33873f"
+                        insurance_date: "2024-09-11"
+                        term_start_date: "2024-09-11"
+                        term_end_date: "2025-09-11"
+                        insurance_amount: 1600
+                        operation_amount: 6400
+                        customer:
+                          customer_key: "cd587fa8-3abd-4023-99ab-957df60933a5"
+                          document_number: "08556878350"
+                          name: "Wilker Oliveiraço"
+                          birth_date: "1998-03-21"
+                          email: "urich.oliveira@yopmail.com"
+                          phone:
+                            country_code: "55"
+                            area_code: "11"
+                            number: "966931427"
+                          address:
+                            postal_code: "56821686"
+                            state: "CE"
+                            city: "Ceará"
+                            neighborhood: "Marmiteiros"
+                            street: "Conjunto João Gabriel da Mata"
+                            number: "95"
+                            complement: ""
+                        covers:
+                          - cover_amount: 200
+                            cover_type: "permanent_disability"
+                            cover_prize_amount: 572.82
+                          - cover_amount: 100
+                            cover_type: "accidental_death"
+                            cover_prize_amount: 572.82
+                          - cover_amount: 300
+                            cover_type: "unemployment"
+                            cover_prize_amount: 572.82
+                        policy_number: "1098200000008"
+                        prize_number: "3907"
+                        insurance_premium_net_amount: 1145.63
+                        iof_amount: 4.37
+                    pagination:
+                      current_page: 0
+                      next_page: 0
+                      rows_per_page: 1
+        '400':
+          description: Parâmetros ausentes ou inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro: { type: string }
+              examples:
+                falta_debtKey:
+                  summary: Falta debtKey
+                  value: { "erro": "Parâmetro 'debtKey' é obrigatório" }
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro: { type: string }
+
+  /bill:
+    get:
+      tags:
+        - Documentos (Bilhete)
+      summary: Consulta de bilhete/documento assinado por chave de documento
+      description: |
+        Retorna URLs e informações de validade do documento/bilhete.
+
+        Exemplo:
+        GET /bill?documentKey=a11dc0fe-51ed-41aa-bb40-bca80d6e515b
+      parameters:
+        - name: documentKey
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "a11dc0fe-51ed-41aa-bb40-bca80d6e515b"
+          description: Chave do documento a ser consultado.
+      responses:
+        '200':
+          description: Consulta de documento realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - document_key
+                  - document_url
+                  - expiration_datetime
+                properties:
+                  document_key:
+                    type: string
+                  signed_document_url:
+                    type: string
+                    nullable: true
+                    description: URL do documento assinado (se existir).
+                  document_url:
+                    type: string
+                    description: URL do documento atual para visualização/download.
+                  expiration_datetime:
+                    type: string
+                    format: date-time
+                    description: Data/hora de expiração do link.
+              examples:
+                sucesso:
+                  summary: Documento encontrado
+                  value:
+                    document_key: "a11dc0fe-51ed-41aa-bb40-bca80d6e515b"
+                    signed_document_url: null
+                    document_url: "https://storage.googleapis.com/dev-doc-api-private/documents/a11dc0fe-51ed-41aa-bb40-bca80d6e515b/TESTEELECTRONIC2.pdf?Expires=1726081733&GoogleAccessId=doc-api-signed-url-service-acc%40qicredit-dev.iam.gserviceaccount.com&Signature=CNY8ch%2BQ2FuLXrbRZGLhH41A7SkNJRUUq%2FJoegTIMeXEiNImD%2FkPoEHyNtOXWUUR8JtEL6ppT0s1tXA9oFfLjzOtvzMOfpal0TwJDLSsX9r4HxcxvzFZUJELAn9yIAcRhqR%2BnzUn0WYyQA%2B0hAalz%2Bj274pXhIExqJJR4LiDUAkzRE3WD0GOvsV7afAoqQ8P3Xxj4mvOM3P%2BuFhgP6hcJmq0K%2B5qHssF3DtvpQFLcLaQ7T45YoQDCnDFGztD0Un0%2BNBwv4n2142rV3rMu9h3DzLmQbEjaeYgHb4wq2kOfyfEUSbaU683d6hA7CNyrPWMeoi%2F%2BgTfFFadbcGCMGX2%2BQ%3D%3D"
+                    expiration_datetime: "2023-03-03T19:08:53.000Z"
+        '400':
+          description: Parâmetros ausentes ou inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro: { type: string }
+              examples:
+                falta_documentKey:
+                  summary: Falta documentKey
+                  value: { "erro": "Parâmetro 'documentKey' é obrigatório" }
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro: { type: string }
+
+
   /signVinculo:
     post:
       tags:
