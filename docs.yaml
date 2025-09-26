@@ -169,7 +169,7 @@ paths:
         '500':
           description: Erro interno no servidor
 
-  /checkElegibility:
+  dinherow/checkElegibility:
     get:
       tags:
         - Seguro (Insurance)
@@ -266,7 +266,7 @@ paths:
                   erro:
                     type: string
 
-  /checkInsurance:
+  dinherow/checkInsurance:
     get:
       tags:
         - Seguro (Insurance)
@@ -481,7 +481,7 @@ paths:
                 properties:
                   erro: { type: string }
 
-  /bill:
+  dinherow/bill:
     get:
       tags:
         - Seguro (Insurance)
@@ -650,5 +650,6 @@ paths:
                   value:
                     datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
                     error: "Payload Invalido"
+
 
 
