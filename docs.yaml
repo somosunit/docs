@@ -172,8 +172,8 @@ paths:
   /checkElegibility:
     get:
       tags:
-        - Elegibilidade
-      summary: Verifica elegibilidade por CPF, data de nascimento e valor do débito
+        - Seguro (Insurance)
+      summary: Verifica elegibilidade de seguro utilizando CPF, data de nascimento e valor do débito
       description: |
         Retorna se o CPF é elegível com base em data de nascimento e valor do débito (issue_amount).
 
@@ -484,8 +484,8 @@ paths:
   /bill:
     get:
       tags:
-        - Documentos (Bilhete)
-      summary: Consulta de bilhete/documento assinado por chave de documento
+        - Seguro (Insurance)
+      summary: Consulta de bilhete/documento de seguro assinado por chave de documento
       description: |
         Retorna URLs e informações de validade do documento/bilhete.
 
@@ -650,4 +650,5 @@ paths:
                   value:
                     datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
                     error: "Payload Invalido"
+
 
