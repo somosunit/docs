@@ -176,11 +176,7 @@ paths:
       summary: Simula uma operação de crédito e retorna cronograma e taxas
       description: |
         Recebe os parâmetros da operação (tomador, condições financeiras, garantias e seguro) e
-        retorna a simulação completa da dívida, incluindo CET, IOF, taxas, cronograma de parcelas,
-        tarifas contratuais e opções de desembolso.
-
-        Exemplo:
-        POST /dinheirow/debtSimulation
+        retorna a simulação completa da dívida (CET, IOF, cronograma de parcelas, tarifas e opções de desembolso).
       requestBody:
         required: true
         content:
@@ -212,28 +208,12 @@ paths:
                     - interest_grace_period
                     - principal_grace_period
                   properties:
-                    first_due_date:
-                      type: string
-                      format: date
-                      description: Data do 1º vencimento (YYYY-MM-DD).
-                    disbursed_amount:
-                      type: number
-                      format: float
-                      description: Valor a ser desembolsado ao tomador.
-                    disbursement_date:
-                      type: string
-                      format: date
-                      description: Data prevista do desembolso (YYYY-MM-DD).
-                    limit_days_to_disburse:
-                      type: integer
-                      description: Prazo máximo (em dias) para efetivar o desembolso.
-                    number_of_installments:
-                      type: integer
-                      description: Quantidade total de parcelas.
-                    monthly_interest_rate:
-                      type: number
-                      format: float
-                      description: Taxa de juros mensal (ex.: 0.0699 = 6,99% a.m.).
+                    first_due_date: { type: string, format: date }
+                    disbursed_amount: { type: number, format: float }
+                    disbursement_date: { type: string, format: date }
+                    limit_days_to_disburse: { type: integer }
+                    number_of_installments: { type: integer }
+                    monthly_interest_rate: { type: number, format: float }
                     interest_type:
                       type: string
                       enum: [pre_price_days, pre_price, post_fixed]
@@ -241,22 +221,16 @@ paths:
                       type: object
                       required: [monthly_rate, interest_base, contract_fine_rate]
                       properties:
-                        monthly_rate:
-                          type: number
-                          format: float
+                        monthly_rate: { type: number, format: float }
                         interest_base:
                           type: string
                           enum: [calendar_days, workdays]
-                        contract_fine_rate:
-                          type: number
-                          format: float
+                        contract_fine_rate: { type: number, format: float }
                     credit_operation_type:
                       type: string
                       enum: [ccb, ccb_financiamento, cce]
-                    interest_grace_period:
-                      type: integer
-                    principal_grace_period:
-                      type: integer
+                    interest_grace_period: { type: integer }
+                    principal_grace_period: { type: integer }
                 collaterals:
                   type: array
                   minItems: 1
@@ -302,18 +276,10 @@ paths:
                 type: object
                 required: [type, key, status, event_datetime, data]
                 properties:
-                  type:
-                    type: string
-                    example: debt
-                  key:
-                    type: string
-                    format: uuid
-                  status:
-                    type: string
-                    example: finished
-                  event_datetime:
-                    type: string
-                    description: Data/hora de processamento (YYYY-MM-DD HH:mm:ss).
+                  type: { type: string, example: debt }
+                  key: { type: string, format: uuid }
+                  status: { type: string, example: finished }
+                  event_datetime: { type: string }
                   data:
                     type: object
                     required:
@@ -343,67 +309,35 @@ paths:
                       - assignment_amount
                       - disbursement_options
                     properties:
-                      interest_type:
-                        type: string
-                        enum: [pre_price_days, pre_price, post_fixed]
-                      credit_operation_type:
-                        type: string
-                        enum: [ccb, ccb_financiamento, cce]
-                      interest_grace_period:
-                        type: integer
-                      interest_payment_month_period:
-                        type: integer
-                      principal_grace_period:
-                        type: integer
-                      principal_amortization_month_period:
-                        type: integer
-                      operation_type:
-                        type: string
-                        example: structured_operation
+                      interest_type: { type: string, enum: [pre_price_days, pre_price, post_fixed] }
+                      credit_operation_type: { type: string, enum: [ccb, ccb_financiamento, cce] }
+                      interest_grace_period: { type: integer }
+                      interest_payment_month_period: { type: integer }
+                      principal_grace_period: { type: integer }
+                      principal_amortization_month_period: { type: integer }
+                      operation_type: { type: string }
                       post_fixed_interest_base:
                         type: string
+                        nullable: true
                         enum: [workdays, calendar_days, null]
-                        nullable: true
-                      post_fixed_interest_rate:
-                        type: number
-                        nullable: true
+                      post_fixed_interest_rate: { type: number, nullable: true }
                       prefixed_interest_rate:
                         type: object
                         required: [interest_base, annual_rate, monthly_rate, daily_rate]
                         properties:
-                          interest_base:
-                            type: string
-                            enum: [calendar_days_365, calendar_days_252]
-                          annual_rate:
-                            type: number
-                          monthly_rate:
-                            type: number
-                          daily_rate:
-                            type: number
-                      issue_date:
-                        type: string
-                        format: date
-                      number_of_installments:
-                        type: integer
-                      requester_key:
-                        type: string
-                        format: uuid
-                        nullable: true
-                      final_disbursement_amount:
-                        type: number
-                      total_pre_fixed_amount:
-                        type: number
-                      iof_amount:
-                        type: number
-                      cet:
-                        type: number
-                        description: CET mensal (quando aplicável).
-                      annual_cet:
-                        type: number
-                        description: CET anual.
-                      disbursement_date:
-                        type: string
-                        format: date
+                          interest_base: { type: string, enum: [calendar_days_365, calendar_days_252] }
+                          annual_rate: { type: number, format: float }
+                          monthly_rate: { type: number, format: float }
+                          daily_rate: { type: number, format: float }
+                      issue_date: { type: string, format: date }
+                      number_of_installments: { type: integer }
+                      requester_key: { type: string, format: uuid, nullable: true }
+                      final_disbursement_amount: { type: number, format: float }
+                      total_pre_fixed_amount: { type: number, format: float }
+                      iof_amount: { type: number, format: float }
+                      cet: { type: number, format: float }
+                      annual_cet: { type: number, format: float }
+                      disbursement_date: { type: string, format: date }
                       installments:
                         type: array
                         items:
@@ -426,13 +360,13 @@ paths:
                             workdays: { type: integer }
                             business_due_date: { type: string, format: date }
                             due_date: { type: string, format: date }
-                            due_principal: { type: number }
+                            due_principal: { type: number, format: float }
                             has_interest: { type: boolean }
-                            post_fixed_amount: { type: number }
-                            pre_fixed_amount: { type: number }
-                            tax_amount: { type: number }
-                            total_amount: { type: number }
-                            principal_amortization_amount: { type: number }
+                            post_fixed_amount: { type: number, format: float }
+                            pre_fixed_amount: { type: number, format: float }
+                            tax_amount: { type: number, format: float }
+                            total_amount: { type: number, format: float }
+                            principal_amortization_amount: { type: number, format: float }
                             installment_number: { type: integer }
                       external_contract_fees:
                         type: array
@@ -447,47 +381,36 @@ paths:
                             - net_fee_amount
                             - amount_released
                           properties:
-                            fee_type:
-                              type: string
-                              enum: [tac, spread_tax_free, tac_tax_free, insurance_premium]
-                            amount_type:
-                              type: string
-                              enum: [absolute, percentage]
-                            amount: { type: number }
-                            fee_amount: { type: number }
-                            tax_amount: { type: number }
-                            net_fee_amount: { type: number }
-                            csll_amount: { type: number }
-                            irrf_amount: { type: number }
-                            pis_amount: { type: number }
-                            cofins_amount: { type: number }
-                            amount_released: { type: number }
-                            description:
-                              type: string
-                              nullable: true
-                      contract_fee_amount: { type: number }
-                      external_contract_fee_amount: { type: number }
-                      net_external_contract_fee_amount: { type: number }
+                            fee_type: { type: string, enum: [tac, spread_tax_free, tac_tax_free, insurance_premium] }
+                            amount_type: { type: string, enum: [absolute, percentage] }
+                            amount: { type: number, format: float }
+                            fee_amount: { type: number, format: float }
+                            tax_amount: { type: number, format: float }
+                            net_fee_amount: { type: number, format: float }
+                            csll_amount: { type: number, format: float }
+                            irrf_amount: { type: number, format: float }
+                            pis_amount: { type: number, format: float }
+                            cofins_amount: { type: number, format: float }
+                            amount_released: { type: number, format: float }
+                            description: { type: string, nullable: true }
+                      contract_fee_amount: { type: number, format: float }
+                      external_contract_fee_amount: { type: number, format: float }
+                      net_external_contract_fee_amount: { type: number, format: float }
                       contract_fees:
                         type: array
                         items:
                           type: object
                           required: [fee_type, amount_type, amount, fee_amount]
                           properties:
-                            fee_type:
-                              type: string
-                              enum: [spread, spread_ted_fee]
-                            amount_type:
-                              type: string
-                              enum: [absolute, percentage]
-                            amount: { type: number }
-                            fee_amount: { type: number }
-                      issue_amount: { type: number }
-                      disbursed_issue_amount: { type: number }
-                      assignment_amount: { type: number }
+                            fee_type: { type: string, enum: [spread, spread_ted_fee] }
+                            amount_type: { type: string, enum: [absolute, percentage] }
+                            amount: { type: number, format: float }
+                            fee_amount: { type: number, format: float }
+                      issue_amount: { type: number, format: float }
+                      disbursed_issue_amount: { type: number, format: float }
+                      assignment_amount: { type: number, format: float }
                       disbursement_options:
                         type: array
-                        description: Conjunto de variações/planos de desembolso calculados.
                         items:
                           type: object
                           required:
@@ -509,10 +432,10 @@ paths:
                             - final_disbursement_amount
                             - prefixed_interest_rate
                           properties:
-                            iof_amount: { type: number }
-                            total_pre_fixed_amount: { type: number }
-                            cet: { type: number }
-                            annual_cet: { type: number }
+                            iof_amount: { type: number, format: float }
+                            total_pre_fixed_amount: { type: number, format: float }
+                            cet: { type: number, format: float }
+                            annual_cet: { type: number, format: float }
                             contract_fees:
                               type: array
                               items:
@@ -520,8 +443,8 @@ paths:
                                 properties:
                                   fee_type: { type: string }
                                   amount_type: { type: string }
-                                  amount: { type: number }
-                                  fee_amount: { type: number }
+                                  amount: { type: number, format: float }
+                                  fee_amount: { type: number, format: float }
                             external_contract_fees:
                               type: array
                               items:
@@ -529,21 +452,19 @@ paths:
                                 properties:
                                   fee_type: { type: string }
                                   amount_type: { type: string }
-                                  amount: { type: number }
-                                  fee_amount: { type: number }
-                                  tax_amount: { type: number }
-                                  net_fee_amount: { type: number }
-                                  csll_amount: { type: number }
-                                  irrf_amount: { type: number }
-                                  pis_amount: { type: number }
-                                  cofins_amount: { type: number }
-                                  amount_released: { type: number }
-                                  description:
-                                    type: string
-                                    nullable: true
-                            contract_fee_amount: { type: number }
-                            external_contract_fee_amount: { type: number }
-                            net_external_contract_fee_amount: { type: number }
+                                  amount: { type: number, format: float }
+                                  fee_amount: { type: number, format: float }
+                                  tax_amount: { type: number, format: float }
+                                  net_fee_amount: { type: number, format: float }
+                                  csll_amount: { type: number, format: float }
+                                  irrf_amount: { type: number, format: float }
+                                  pis_amount: { type: number, format: float }
+                                  cofins_amount: { type: number, format: float }
+                                  amount_released: { type: number, format: float }
+                                  description: { type: string, nullable: true }
+                            contract_fee_amount: { type: number, format: float }
+                            external_contract_fee_amount: { type: number, format: float }
+                            net_external_contract_fee_amount: { type: number, format: float }
                             disbursement_date: { type: string, format: date }
                             first_due_date: { type: string, format: date }
                             installments:
@@ -555,51 +476,51 @@ paths:
                                   workdays: { type: integer }
                                   business_due_date: { type: string, format: date }
                                   due_date: { type: string, format: date }
-                                  due_principal: { type: number }
+                                  due_principal: { type: number, format: float }
                                   has_interest: { type: boolean }
-                                  post_fixed_amount: { type: number }
-                                  pre_fixed_amount: { type: number }
-                                  tax_amount: { type: number }
-                                  total_amount: { type: number }
-                                  principal_amortization_amount: { type: number }
+                                  post_fixed_amount: { type: number, format: float }
+                                  pre_fixed_amount: { type: number, format: float }
+                                  tax_amount: { type: number, format: float }
+                                  total_amount: { type: number, format: float }
+                                  principal_amortization_amount: { type: number, format: float }
                                   installment_number: { type: integer }
-                            issue_amount: { type: number }
-                            disbursed_issue_amount: { type: number }
-                            assignment_amount: { type: number }
-                            final_disbursement_amount: { type: number }
+                            issue_amount: { type: number, format: float }
+                            disbursed_issue_amount: { type: number, format: float }
+                            assignment_amount: { type: number, format: float }
+                            final_disbursement_amount: { type: number, format: float }
                             prefixed_interest_rate:
                               type: object
                               properties:
                                 interest_base: { type: string }
-                                annual_rate: { type: number }
-                                monthly_rate: { type: number }
-                                daily_rate: { type: number }
+                                annual_rate: { type: number, format: float }
+                                monthly_rate: { type: number, format: float }
+                                daily_rate: { type: number, format: float }
               examples:
                 sucesso:
-                  summary: Retorno 200 de simulação
+                  summary: Exemplo de retorno 200
                   value:
-                    type: "debt"
-                    key: "bf84379c-d4cf-4f16-a63c-865c129e6fce"
-                    status: "finished"
+                    type: debt
+                    key: bf84379c-d4cf-4f16-a63c-865c129e6fce
+                    status: finished
                     event_datetime: "2025-03-27 22:28:37"
                     data:
-                      interest_type: "pre_price_days"
-                      credit_operation_type: "ccb"
+                      interest_type: pre_price_days
+                      credit_operation_type: ccb
                       interest_grace_period: 0
                       interest_payment_month_period: 1
                       principal_grace_period: 0
                       principal_amortization_month_period: 1
-                      operation_type: "structured_operation"
-                      post_fixed_interest_base: "workdays"
+                      operation_type: structured_operation
+                      post_fixed_interest_base: workdays
                       post_fixed_interest_rate: null
                       prefixed_interest_rate:
-                        interest_base: "calendar_days_365"
+                        interest_base: calendar_days_365
                         annual_rate: 0.23872053
                         monthly_rate: 0.0179999999
                         daily_rate: 0.0005866899
                       issue_date: "2026-09-06"
                       number_of_installments: 2
-                      requester_key: "f2b3b903-aa41-4a79-8b2f-abc3cc5a6590"
+                      requester_key: f2b3b903-aa41-4a79-8b2f-abc3cc5a6590
                       final_disbursement_amount: 701.6
                       total_pre_fixed_amount: 153.0
                       iof_amount: 18.34
@@ -632,10 +553,10 @@ paths:
                           principal_amortization_amount: 245.47564648
                           installment_number: 2
                       external_contract_fees:
-                        - fee_type: "tac"
-                          amount_type: "absolute"
-                          amount: 10.0
-                          fee_amount: 10.0
+                        - fee_type: tac
+                          amount_type: absolute
+                          amount: 10
+                          fee_amount: 10
                           tax_amount: 1.42
                           net_fee_amount: 8.58
                           csll_amount: 0
@@ -644,223 +565,78 @@ paths:
                           cofins_amount: 0
                           amount_released: 8.58
                           description: null
-                        - fee_type: "spread_tax_free"
-                          amount_type: "absolute"
-                          amount: 0.0
-                          fee_amount: 0.0
-                          tax_amount: 0.0
-                          net_fee_amount: 0.0
-                          csll_amount: 0
-                          irrf_amount: 0
-                          pis_amount: 0
-                          cofins_amount: 0
-                          amount_released: 0
-                          description: null
-                        - fee_type: "tac_tax_free"
-                          amount_type: "absolute"
-                          amount: 0.0
-                          fee_amount: 0.0
-                          tax_amount: 0.0
-                          net_fee_amount: 0.0
-                          csll_amount: 0
-                          irrf_amount: 0
-                          pis_amount: 0
-                          cofins_amount: 0
-                          amount_released: 0
-                          description: null
-                        - fee_type: "insurance_premium"
-                          amount_type: "absolute"
-                          amount: 0.0
-                          fee_amount: 0.0
-                          tax_amount: 0.0
-                          net_fee_amount: 0.0
-                          csll_amount: 0
-                          irrf_amount: 0
-                          pis_amount: 0
-                          cofins_amount: 0
-                          amount_released: 0
-                          description: null
                       contract_fee_amount: 3.65
-                      external_contract_fee_amount: 10.0
+                      external_contract_fee_amount: 10
                       net_external_contract_fee_amount: 8.58
                       contract_fees:
-                        - fee_type: "spread"
-                          amount_type: "percentage"
+                        - fee_type: spread
+                          amount_type: percentage
                           amount: 0.5
                           fee_amount: 3.65
-                        - fee_type: "spread_ted_fee"
-                          amount_type: "absolute"
-                          amount: 3.0
-                          fee_amount: 3.0
+                        - fee_type: spread_ted_fee
+                          amount_type: absolute
+                          amount: 3
+                          fee_amount: 3
                       issue_amount: 729.94
                       disbursed_issue_amount: 701.6
                       assignment_amount: 736.59
                       disbursement_options:
                         - iof_amount: 18.34
-                          total_pre_fixed_amount: 153.0
+                          total_pre_fixed_amount: 153
                           cet: 0.0219
                           annual_cet: 0.297
                           contract_fees:
-                            - fee_type: "spread"
-                              amount_type: "percentage"
+                            - fee_type: spread
+                              amount_type: percentage
                               amount: 0.5
                               fee_amount: 3.65
-                            - fee_type: "spread_ted_fee"
-                              amount_type: "absolute"
-                              amount: 3.0
-                              fee_amount: 3.0
-                          external_contract_fees:
-                            - fee_type: "tac"
-                              amount_type: "absolute"
-                              amount: 10.0
-                              fee_amount: 10.0
-                              tax_amount: 1.42
-                              net_fee_amount: 8.58
-                              csll_amount: 0.0
-                              irrf_amount: 0.0
-                              pis_amount: 0.0
-                              cofins_amount: 0.0
-                              amount_released: 8.58
-                              description: null
-                            - fee_type: "spread_tax_free"
-                              amount_type: "absolute"
-                              amount: 0.0
-                              fee_amount: 0.0
-                              tax_amount: 0.0
-                              net_fee_amount: 0.0
-                              csll_amount: 0
-                              irrf_amount: 0
-                              pis_amount: 0
-                              cofins_amount: 0
-                              amount_released: 0.0
-                              description: null
-                            - fee_type: "tac_tax_free"
-                              amount_type: "absolute"
-                              amount: 0.0
-                              fee_amount: 0.0
-                              tax_amount: 0.0
-                              net_fee_amount: 0.0
-                              csll_amount: 0
-                              irrf_amount: 0
-                              pis_amount: 0
-                              cofins_amount: 0
-                              amount_released: 0.0
-                              description: null
-                            - fee_type: "insurance_premium"
-                              amount_type: "absolute"
-                              amount: 0.0
-                              fee_amount: 0.0
-                              tax_amount: 0.0
-                              net_fee_amount: 0.0
-                              csll_amount: 0
-                              irrf_amount: 0
-                              pis_amount: 0
-                              cofins_amount: 0
-                              amount_released: 0.0
-                              description: null
+                            - fee_type: spread_ted_fee
+                              amount_type: absolute
+                              amount: 3
+                              fee_amount: 3
+                          external_contract_fees: []
                           contract_fee_amount: 3.65
-                          external_contract_fee_amount: 10.0
+                          external_contract_fee_amount: 10
                           net_external_contract_fee_amount: 8.58
                           disbursement_date: "2026-09-06"
                           first_due_date: "2027-04-01"
-                          installments:
-                            - calendar_days: 207
-                              workdays: 140
-                              business_due_date: "2027-04-01"
-                              due_date: "2027-04-01"
-                              due_principal: 729.94
-                              has_interest: true
-                              post_fixed_amount: 0
-                              pre_fixed_amount: 94.22564648
-                              tax_amount: 8.22329794
-                              total_amount: 578.69
-                              principal_amortization_amount: 484.46435352
-                              installment_number: 1
-                            - calendar_days: 366
-                              workdays: 253
-                              business_due_date: "2028-04-03"
-                              due_date: "2028-04-01"
-                              due_principal: 245.47564648
-                              has_interest: true
-                              post_fixed_amount: 0
-                              pre_fixed_amount: 58.77435352
-                              tax_amount: 7.3470861
-                              total_amount: 304.25
-                              principal_amortization_amount: 245.47564648
-                              installment_number: 2
-                        issue_amount: 729.94
-                        disbursed_issue_amount: 701.6
-                        assignment_amount: 736.59
-                        final_disbursement_amount: 701.6
-                        prefixed_interest_rate:
-                          interest_base: "calendar_days_365"
-                          annual_rate: 0.23872053
-                          monthly_rate: 0.0179999999
-                          daily_rate: 0.0005866899
+                          installments: []
+                          issue_amount: 729.94
+                          disbursed_issue_amount: 701.6
+                          assignment_amount: 736.59
+                          final_disbursement_amount: 701.6
+                          prefixed_interest_rate:
+                            interest_base: calendar_days_365
+                            annual_rate: 0.23872053
+                            monthly_rate: 0.0179999999
+                            daily_rate: 0.0005866899
         '400':
-          description: Requisição inválida (campos obrigatórios ausentes ou formato incorreto)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Campo 'financial.monthly_interest_rate' é obrigatório."
+          description: Requisição inválida
         '422':
-          description: Regra de negócio inválida (parâmetros inconsistentes)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Data de primeira parcela menor que a data de desembolso."
+          description: Regra de negócio inválida
         '500':
           description: Erro interno no servidor
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Falha ao processar a simulação."
 
-  /dinherow/checkElegibility:
+  /dinheirow/checkElegibility:
     get:
       tags:
         - Seguro (Insurance)
       summary: Verifica elegibilidade de seguro utilizando CPF, data de nascimento e valor do débito
-      description: |
-        Retorna se o CPF é elegível com base em data de nascimento e valor do débito (issue_amount).
-
-        Exemplo:
-        GET /checkElegibility?cpf=12345678900&birthDate=1990-01-01&issue_amount=1500.00
       parameters:
         - name: cpf
           in: query
           required: true
-          schema:
-            type: string
-            example: "12345678900"
+          schema: { type: string, example: "12345678900" }
           description: CPF do titular (somente números).
         - name: birthDate
           in: query
           required: true
-          schema:
-            type: string
-            format: date
-            example: "1990-01-01"
+          schema: { type: string, format: date, example: "1990-01-01" }
           description: Data de nascimento no formato YYYY-MM-DD.
         - name: issue_amount
           in: query
           required: true
-          schema:
-            type: number
-            format: float
-            example: 1500.00
+          schema: { type: number, format: float, example: 1500.00 }
           description: Valor total do débito considerado para a elegibilidade.
       responses:
         '200':
@@ -869,355 +645,59 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - eligible
+                required: [eligible]
                 properties:
-                  eligible:
-                    type: boolean
-                    description: Indica se é elegível.
-                  reason:
-                    type: string
-                    nullable: true
-                    description: Código/razão técnica de inelegibilidade (quando houver).
-                  reason_translated:
-                    type: string
-                    nullable: true
-                    description: Texto legível da razão de inelegibilidade (quando houver).
-              examples:
-                elegivel:
-                  summary: CPF elegível
-                  value:
-                    eligible: true
-                    reason: null
-                    reason_translated: null
-                inelegivel:
-                  summary: CPF inelegível
-                  value:
-                    eligible: false
-                    reason: "MIN_AGE"
-                    reason_translated: "Idade mínima não atendida"
+                  eligible: { type: boolean }
+                  reason: { type: string, nullable: true }
+                  reason_translated: { type: string, nullable: true }
         '400':
           description: Parâmetros ausentes ou inválidos
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro:
-                    type: string
-              examples:
-                falta_cpf:
-                  summary: Falta CPF
-                  value: { "erro": "Parâmetro 'cpf' é obrigatório" }
-                falta_birthdate:
-                  summary: Falta birthDate
-                  value: { "erro": "Parâmetro 'birthDate' é obrigatório" }
-                falta_issue_amount:
-                  summary: Falta issue_amount
-                  value: { "erro": "Parâmetro 'issueAmount' é obrigatório" }
         '500':
           description: Erro interno no servidor
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro:
-                    type: string
 
-  /dinherow/checkInsurance:
+  /dinheirow/checkInsurance:
     get:
       tags:
         - Seguro (Insurance)
       summary: Consulta informações de seguro por chave de dívida
-      description: |
-        Retorna dados de apólice/seguro vinculados à dívida informada.
-
-        Exemplo:
-        GET /checkInsurance?debtKey=5ae2c008-44c1-4435-bbfa-094a4b11d962
       parameters:
         - name: debtKey
           in: query
           required: true
-          schema:
-            type: string
-            example: "5ae2c008-44c1-4435-bbfa-094a4b11d962"
+          schema: { type: string, example: "5ae2c008-44c1-4435-bbfa-094a4b11d962" }
           description: Chave da dívida (debtKey) para consulta.
       responses:
         '200':
           description: Consulta de seguro realizada com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data
-                  - pagination
-                properties:
-                  data:
-                    type: array
-                    description: Lista de apólices/seguros vinculados.
-                    items:
-                      type: object
-                      required:
-                        - insurance_premium_key
-                        - status
-                        - credit_operation_key
-                        - contract_number
-                        - insurance_date
-                        - term_start_date
-                        - term_end_date
-                        - insurance_amount
-                        - operation_amount
-                        - customer
-                        - covers
-                      properties:
-                        insurance_premium_key:
-                          type: string
-                        status:
-                          type: string
-                          example: "active"
-                        credit_operation_key:
-                          type: string
-                        disbursement_key:
-                          type: string
-                          nullable: true
-                        contract_number:
-                          type: string
-                        requester_key:
-                          type: string
-                        insurance_policy_document_key:
-                          type: string
-                        insurance_date:
-                          type: string
-                          format: date
-                        term_start_date:
-                          type: string
-                          format: date
-                        term_end_date:
-                          type: string
-                          format: date
-                        insurance_amount:
-                          type: number
-                          format: float
-                        operation_amount:
-                          type: number
-                          format: float
-                        customer:
-                          type: object
-                          required: [customer_key, document_number, name]
-                          properties:
-                            customer_key: { type: string }
-                            document_number: { type: string }
-                            name: { type: string }
-                            birth_date:
-                              type: string
-                              format: date
-                              nullable: true
-                            email:
-                              type: string
-                              format: email
-                              nullable: true
-                            phone:
-                              type: object
-                              nullable: true
-                              properties:
-                                country_code: { type: string }
-                                area_code: { type: string }
-                                number: { type: string }
-                            address:
-                              type: object
-                              nullable: true
-                              properties:
-                                postal_code: { type: string }
-                                state: { type: string }
-                                city: { type: string }
-                                neighborhood: { type: string }
-                                street: { type: string }
-                                number: { type: string }
-                                complement: { type: string }
-                        covers:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              cover_amount:
-                                type: number
-                                format: float
-                              cover_type:
-                                type: string
-                                example: "accidental_death"
-                              cover_prize_amount:
-                                type: number
-                                format: float
-                        policy_number:
-                          type: string
-                        prize_number:
-                          type: string
-                        insurance_premium_net_amount:
-                          type: number
-                          format: float
-                        iof_amount:
-                          type: number
-                          format: float
-                  pagination:
-                    type: object
-                    properties:
-                      current_page: { type: integer }
-                      next_page: { type: integer }
-                      rows_per_page: { type: integer }
-              examples:
-                sucesso:
-                  summary: Retorno com uma apólice
-                  value:
-                    data:
-                      - insurance_premium_key: "e4fe84e3-cc71-481b-87ea-8a07f7d69079"
-                        status: "active"
-                        credit_operation_key: "5ae2c008-44c1-4435-bbfa-094a4b11d962"
-                        disbursement_key: "bd0ea133-ff47-4a21-a3e6-24186e5e2fc1"
-                        contract_number: "4069550961/QIT"
-                        requester_key: "1040ce22-aeac-4728-82da-d1f22c33873f"
-                        insurance_policy_document_key: "9990ce22-aeac-4728-82da-8a07f7d69079"
-                        insurance_date: "2024-09-11"
-                        term_start_date: "2024-09-11"
-                        term_end_date: "2025-09-11"
-                        insurance_amount: 1600
-                        operation_amount: 6400
-                        customer:
-                          customer_key: "cd587fa8-3abd-4023-99ab-957df60933a5"
-                          document_number: "08556878350"
-                          name: "Wilker Oliveiraço"
-                          birth_date: "1998-03-21"
-                          email: "urich.oliveira@yopmail.com"
-                          phone:
-                            country_code: "55"
-                            area_code: "11"
-                            number: "966931427"
-                          address:
-                            postal_code: "56821686"
-                            state: "CE"
-                            city: "Ceará"
-                            neighborhood: "Marmiteiros"
-                            street: "Conjunto João Gabriel da Mata"
-                            number: "95"
-                            complement: ""
-                        covers:
-                          - cover_amount: 200
-                            cover_type: "permanent_disability"
-                            cover_prize_amount: 572.82
-                          - cover_amount: 100
-                            cover_type: "accidental_death"
-                            cover_prize_amount: 572.82
-                          - cover_amount: 300
-                            cover_type: "unemployment"
-                            cover_prize_amount: 572.82
-                        policy_number: "1098200000008"
-                        prize_number: "3907"
-                        insurance_premium_net_amount: 1145.63
-                        iof_amount: 4.37
-                    pagination:
-                      current_page: 0
-                      next_page: 0
-                      rows_per_page: 1
         '400':
           description: Parâmetros ausentes ou inválidos
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro: { type: string }
-              examples:
-                falta_debtKey:
-                  summary: Falta debtKey
-                  value: { "erro": "Parâmetro 'debtKey' é obrigatório" }
         '500':
           description: Erro interno no servidor
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro: { type: string }
 
   /dinherow/bill:
     get:
       tags:
         - Seguro (Insurance)
-      summary: Consulta de bilhete/documento de seguro assinado por chave de documento
-      description: |
-        Retorna URLs e informações de validade do documento/bilhete.
-
-        Exemplo:
-        GET /bill?documentKey=a11dc0fe-51ed-41aa-bb40-bca80d6e515b
+      summary: Consulta de bilhete/documento de seguro por chave de documento
       parameters:
         - name: documentKey
           in: query
           required: true
-          schema:
-            type: string
-            example: "a11dc0fe-51ed-41aa-bb40-bca80d6e515b"
+          schema: { type: string, example: "a11dc0fe-51ed-41aa-bb40-bca80d6e515b" }
           description: Chave do documento a ser consultado.
       responses:
         '200':
           description: Consulta de documento realizada com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - document_key
-                  - document_url
-                  - expiration_datetime
-                properties:
-                  document_key:
-                    type: string
-                  signed_document_url:
-                    type: string
-                    nullable: true
-                    description: URL do documento assinado (se existir).
-                  document_url:
-                    type: string
-                    description: URL do documento atual para visualização/download.
-                  expiration_datetime:
-                    type: string
-                    format: date-time
-                    description: Data/hora de expiração do link.
-              examples:
-                sucesso:
-                  summary: Documento encontrado
-                  value:
-                    document_key: "a11dc0fe-51ed-41aa-bb40-bca80d6e515b"
-                    signed_document_url: null
-                    document_url: "https://storage.googleapis.com/dev-doc-api-private/documents/a11dc0fe-51ed-41aa-bb40-bca80d6e515b/TESTEELECTRONIC2.pdf?Expires=1726081733&GoogleAccessId=doc-api-signed-url-service-acc%40qicredit-dev.iam.gserviceaccount.com&Signature=CNY8ch%2BQ2FuLXrbRZGLhH41A7SkNJRUUq%2FJoegTIMeXEiNImD%2FkPoEHyNtOXWUUR8JtEL6ppT0s1tXA9oFfLjzOtvzMOfpal0TwJDLSsX9r4HxcxvzFZUJELAn9yIAcRhqR%2BnzUn0WYyQA%2B0hAalz%2Bj274pXhIExqJJR4LiDUAkzRE3WD0GOvsV7afAoqQ8P3Xxj4mvOM3P%2BuFhgP6hcJmq0K%2B5qHssF3DtvpQFLcLaQ7T45YoQDCnDFGztD0Un0%2BNBwv4n2142rV3rMu9h3DzLmQbEjaeYgHb4wq2kOfyfEUSbaU683d6hA7CNyrPWMeoi%2F%2BgTfFFadbcGCMGX2%2BQ%3D%3D"
-                    expiration_datetime: "2023-03-03T19:08:53.000Z"
         '400':
           description: Parâmetros ausentes ou inválidos
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro: { type: string }
-              examples:
-                falta_documentKey:
-                  summary: Falta documentKey
-                  value: { "erro": "Parâmetro 'documentKey' é obrigatório" }
         '500':
           description: Erro interno no servidor
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  erro: { type: string }
 
   /signVinculo:
     post:
       tags:
         - Operações
       summary: Assina vínculo
-      description: Gerar documentação para inserção de assinatura de termos
       requestBody:
         required: true
         content:
@@ -1225,7 +705,7 @@ paths:
             schema:
               type: object
               properties:
-                cpf: { type: string, description: CPF do titular (somente números) }
+                cpf: { type: string }
                 email: { type: string, format: email }
                 name: { type: string }
                 phone: { type: string }
@@ -1241,69 +721,5 @@ paths:
       responses:
         '200':
           description: Vínculo assinado com sucesso
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - answer_api_request
-                  - collaborator
-                  - cpf
-                  - device
-                  - email
-                  - key
-                  - name
-                  - phone
-                  - public_ip
-                  - signed
-                  - signed_at
-                  - source
-                  - start_datetime
-                  - status
-                properties:
-                  answer_api_request:
-                    type: object
-                    properties:
-                      employment_relationships_inquiry_key:
-                        type: string
-                      employment_relationships_inquiry_status:
-                        type: string
-                    required:
-                      - employment_relationships_inquiry_key
-                      - employment_relationships_inquiry_status
-                  collaborator: { type: string }
-                  cpf: { type: string }
-                  device: { type: string }
-                  email: { type: string, format: email }
-                  key: { type: string }
-                  name: { type: string }
-                  phone: { type: string }
-                  public_ip: { type: string }
-                  signed: { type: boolean }
-                  signed_at: { type: string, format: date-time }
-                  source: { type: string }
-                  start_datetime: { type: string, format: date-time }
-                  status: { type: string }
-              examples:
-                sucesso:
-                  summary: Exemplo de sucesso
-                  value:
-                    employment_relationships_inquiry_key: "ebc45cc3-9cb1-42eb-bd21-2dbe55425c13"
-                    employment_relationships_inquiry_status: "pending_authorization"
         '400':
           description: Requisição inválida
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  datails:
-                    type: string
-                  error:
-                    type: string
-              examples:
-                invalido:
-                  summary: Exemplo de erro de validação
-                  value:
-                    datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
-                    error: "Payload Invalido"
