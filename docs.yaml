@@ -1,3 +1,6 @@
+Aqui está o arquivo completo com o endpoint **POST /dinheirow/debtSimulation** adicionado após **/debt**, no mesmo grupo **Consulta de Dívidas**, em formato `.yaml`:
+
+```yaml
 openapi: 3.0.0
 info:
   title: API Unit
@@ -168,6 +171,665 @@ paths:
                     mensagem: "Não foram encontrados contratos para esse CPF"
         '500':
           description: Erro interno no servidor
+
+  /dinheirow/debtSimulation:
+    post:
+      tags:
+        - Consulta de Dívidas
+      summary: Simula uma operação de crédito e retorna cronograma e taxas
+      description: |
+        Recebe os parâmetros da operação (tomador, condições financeiras, garantias e seguro) e
+        retorna a simulação completa da dívida, incluindo CET, IOF, taxas, cronograma de parcelas,
+        tarifas contratuais e opções de desembolso.
+
+        Exemplo:
+        POST /dinheirow/debtSimulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [borrower, financial, collaterals, has_insurance]
+              properties:
+                borrower:
+                  type: object
+                  required: [person_type]
+                  properties:
+                    person_type:
+                      type: string
+                      enum: [natural, legal]
+                      example: natural
+                financial:
+                  type: object
+                  required:
+                    - first_due_date
+                    - disbursed_amount
+                    - disbursement_date
+                    - limit_days_to_disburse
+                    - number_of_installments
+                    - monthly_interest_rate
+                    - interest_type
+                    - fine_configuration
+                    - credit_operation_type
+                    - interest_grace_period
+                    - principal_grace_period
+                  properties:
+                    first_due_date:
+                      type: string
+                      format: date
+                      description: Data do 1º vencimento (YYYY-MM-DD).
+                    disbursed_amount:
+                      type: number
+                      format: float
+                      description: Valor a ser desembolsado ao tomador.
+                    disbursement_date:
+                      type: string
+                      format: date
+                      description: Data prevista do desembolso (YYYY-MM-DD).
+                    limit_days_to_disburse:
+                      type: integer
+                      description: Prazo máximo (em dias) para efetivar o desembolso.
+                    number_of_installments:
+                      type: integer
+                      description: Quantidade total de parcelas.
+                    monthly_interest_rate:
+                      type: number
+                      format: float
+                      description: Taxa de juros mensal (ex.: 0.0699 = 6,99% a.m.).
+                    interest_type:
+                      type: string
+                      enum: [pre_price_days, pre_price, post_fixed]
+                    fine_configuration:
+                      type: object
+                      required: [monthly_rate, interest_base, contract_fine_rate]
+                      properties:
+                        monthly_rate:
+                          type: number
+                          format: float
+                        interest_base:
+                          type: string
+                          enum: [calendar_days, workdays]
+                        contract_fine_rate:
+                          type: number
+                          format: float
+                    credit_operation_type:
+                      type: string
+                      enum: [ccb, ccb_financiamento, cce]
+                    interest_grace_period:
+                      type: integer
+                    principal_grace_period:
+                      type: integer
+                collaterals:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [collateral_type]
+                    properties:
+                      collateral_type:
+                        type: string
+                        enum: [private_payroll, public_payroll, guarantee_fund, none]
+                has_insurance:
+                  type: boolean
+            examples:
+              exemplo_basico:
+                summary: Simulação com consignado privado e juros pré-fixados por dias
+                value:
+                  borrower:
+                    person_type: natural
+                  financial:
+                    first_due_date: "2025-12-28"
+                    disbursed_amount: 3000
+                    disbursement_date: "2025-10-15"
+                    limit_days_to_disburse: 3
+                    number_of_installments: 12
+                    monthly_interest_rate: 0.0699
+                    interest_type: pre_price_days
+                    fine_configuration:
+                      monthly_rate: 0.01
+                      interest_base: calendar_days
+                      contract_fine_rate: 0.02
+                    credit_operation_type: ccb
+                    interest_grace_period: 0
+                    principal_grace_period: 0
+                  collaterals:
+                    - collateral_type: private_payroll
+                  has_insurance: true
+      responses:
+        '200':
+          description: Simulação calculada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [type, key, status, event_datetime, data]
+                properties:
+                  type:
+                    type: string
+                    example: debt
+                  key:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    example: finished
+                  event_datetime:
+                    type: string
+                    description: Data/hora de processamento (YYYY-MM-DD HH:mm:ss).
+                  data:
+                    type: object
+                    required:
+                      - interest_type
+                      - credit_operation_type
+                      - interest_grace_period
+                      - interest_payment_month_period
+                      - principal_grace_period
+                      - principal_amortization_month_period
+                      - operation_type
+                      - post_fixed_interest_base
+                      - prefixed_interest_rate
+                      - issue_date
+                      - number_of_installments
+                      - final_disbursement_amount
+                      - iof_amount
+                      - cet
+                      - annual_cet
+                      - disbursement_date
+                      - installments
+                      - contract_fee_amount
+                      - external_contract_fee_amount
+                      - net_external_contract_fee_amount
+                      - contract_fees
+                      - issue_amount
+                      - disbursed_issue_amount
+                      - assignment_amount
+                      - disbursement_options
+                    properties:
+                      interest_type:
+                        type: string
+                        enum: [pre_price_days, pre_price, post_fixed]
+                      credit_operation_type:
+                        type: string
+                        enum: [ccb, ccb_financiamento, cce]
+                      interest_grace_period:
+                        type: integer
+                      interest_payment_month_period:
+                        type: integer
+                      principal_grace_period:
+                        type: integer
+                      principal_amortization_month_period:
+                        type: integer
+                      operation_type:
+                        type: string
+                        example: structured_operation
+                      post_fixed_interest_base:
+                        type: string
+                        enum: [workdays, calendar_days, null]
+                        nullable: true
+                      post_fixed_interest_rate:
+                        type: number
+                        nullable: true
+                      prefixed_interest_rate:
+                        type: object
+                        required: [interest_base, annual_rate, monthly_rate, daily_rate]
+                        properties:
+                          interest_base:
+                            type: string
+                            enum: [calendar_days_365, calendar_days_252]
+                          annual_rate:
+                            type: number
+                          monthly_rate:
+                            type: number
+                          daily_rate:
+                            type: number
+                      issue_date:
+                        type: string
+                        format: date
+                      number_of_installments:
+                        type: integer
+                      requester_key:
+                        type: string
+                        format: uuid
+                        nullable: true
+                      final_disbursement_amount:
+                        type: number
+                      total_pre_fixed_amount:
+                        type: number
+                      iof_amount:
+                        type: number
+                      cet:
+                        type: number
+                        description: CET mensal (quando aplicável).
+                      annual_cet:
+                        type: number
+                        description: CET anual.
+                      disbursement_date:
+                        type: string
+                        format: date
+                      installments:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - calendar_days
+                            - workdays
+                            - business_due_date
+                            - due_date
+                            - due_principal
+                            - has_interest
+                            - post_fixed_amount
+                            - pre_fixed_amount
+                            - tax_amount
+                            - total_amount
+                            - principal_amortization_amount
+                            - installment_number
+                          properties:
+                            calendar_days: { type: integer }
+                            workdays: { type: integer }
+                            business_due_date: { type: string, format: date }
+                            due_date: { type: string, format: date }
+                            due_principal: { type: number }
+                            has_interest: { type: boolean }
+                            post_fixed_amount: { type: number }
+                            pre_fixed_amount: { type: number }
+                            tax_amount: { type: number }
+                            total_amount: { type: number }
+                            principal_amortization_amount: { type: number }
+                            installment_number: { type: integer }
+                      external_contract_fees:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - fee_type
+                            - amount_type
+                            - amount
+                            - fee_amount
+                            - tax_amount
+                            - net_fee_amount
+                            - amount_released
+                          properties:
+                            fee_type:
+                              type: string
+                              enum: [tac, spread_tax_free, tac_tax_free, insurance_premium]
+                            amount_type:
+                              type: string
+                              enum: [absolute, percentage]
+                            amount: { type: number }
+                            fee_amount: { type: number }
+                            tax_amount: { type: number }
+                            net_fee_amount: { type: number }
+                            csll_amount: { type: number }
+                            irrf_amount: { type: number }
+                            pis_amount: { type: number }
+                            cofins_amount: { type: number }
+                            amount_released: { type: number }
+                            description:
+                              type: string
+                              nullable: true
+                      contract_fee_amount: { type: number }
+                      external_contract_fee_amount: { type: number }
+                      net_external_contract_fee_amount: { type: number }
+                      contract_fees:
+                        type: array
+                        items:
+                          type: object
+                          required: [fee_type, amount_type, amount, fee_amount]
+                          properties:
+                            fee_type:
+                              type: string
+                              enum: [spread, spread_ted_fee]
+                            amount_type:
+                              type: string
+                              enum: [absolute, percentage]
+                            amount: { type: number }
+                            fee_amount: { type: number }
+                      issue_amount: { type: number }
+                      disbursed_issue_amount: { type: number }
+                      assignment_amount: { type: number }
+                      disbursement_options:
+                        type: array
+                        description: Conjunto de variações/planos de desembolso calculados.
+                        items:
+                          type: object
+                          required:
+                            - iof_amount
+                            - total_pre_fixed_amount
+                            - cet
+                            - annual_cet
+                            - contract_fees
+                            - external_contract_fees
+                            - contract_fee_amount
+                            - external_contract_fee_amount
+                            - net_external_contract_fee_amount
+                            - disbursement_date
+                            - first_due_date
+                            - installments
+                            - issue_amount
+                            - disbursed_issue_amount
+                            - assignment_amount
+                            - final_disbursement_amount
+                            - prefixed_interest_rate
+                          properties:
+                            iof_amount: { type: number }
+                            total_pre_fixed_amount: { type: number }
+                            cet: { type: number }
+                            annual_cet: { type: number }
+                            contract_fees:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  fee_type: { type: string }
+                                  amount_type: { type: string }
+                                  amount: { type: number }
+                                  fee_amount: { type: number }
+                            external_contract_fees:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  fee_type: { type: string }
+                                  amount_type: { type: string }
+                                  amount: { type: number }
+                                  fee_amount: { type: number }
+                                  tax_amount: { type: number }
+                                  net_fee_amount: { type: number }
+                                  csll_amount: { type: number }
+                                  irrf_amount: { type: number }
+                                  pis_amount: { type: number }
+                                  cofins_amount: { type: number }
+                                  amount_released: { type: number }
+                                  description:
+                                    type: string
+                                    nullable: true
+                            contract_fee_amount: { type: number }
+                            external_contract_fee_amount: { type: number }
+                            net_external_contract_fee_amount: { type: number }
+                            disbursement_date: { type: string, format: date }
+                            first_due_date: { type: string, format: date }
+                            installments:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  calendar_days: { type: integer }
+                                  workdays: { type: integer }
+                                  business_due_date: { type: string, format: date }
+                                  due_date: { type: string, format: date }
+                                  due_principal: { type: number }
+                                  has_interest: { type: boolean }
+                                  post_fixed_amount: { type: number }
+                                  pre_fixed_amount: { type: number }
+                                  tax_amount: { type: number }
+                                  total_amount: { type: number }
+                                  principal_amortization_amount: { type: number }
+                                  installment_number: { type: integer }
+                            issue_amount: { type: number }
+                            disbursed_issue_amount: { type: number }
+                            assignment_amount: { type: number }
+                            final_disbursement_amount: { type: number }
+                            prefixed_interest_rate:
+                              type: object
+                              properties:
+                                interest_base: { type: string }
+                                annual_rate: { type: number }
+                                monthly_rate: { type: number }
+                                daily_rate: { type: number }
+              examples:
+                sucesso:
+                  summary: Retorno 200 de simulação
+                  value:
+                    type: "debt"
+                    key: "bf84379c-d4cf-4f16-a63c-865c129e6fce"
+                    status: "finished"
+                    event_datetime: "2025-03-27 22:28:37"
+                    data:
+                      interest_type: "pre_price_days"
+                      credit_operation_type: "ccb"
+                      interest_grace_period: 0
+                      interest_payment_month_period: 1
+                      principal_grace_period: 0
+                      principal_amortization_month_period: 1
+                      operation_type: "structured_operation"
+                      post_fixed_interest_base: "workdays"
+                      post_fixed_interest_rate: null
+                      prefixed_interest_rate:
+                        interest_base: "calendar_days_365"
+                        annual_rate: 0.23872053
+                        monthly_rate: 0.0179999999
+                        daily_rate: 0.0005866899
+                      issue_date: "2026-09-06"
+                      number_of_installments: 2
+                      requester_key: "f2b3b903-aa41-4a79-8b2f-abc3cc5a6590"
+                      final_disbursement_amount: 701.6
+                      total_pre_fixed_amount: 153.0
+                      iof_amount: 18.34
+                      cet: 0.0219
+                      annual_cet: 0.297
+                      disbursement_date: "2026-09-06"
+                      installments:
+                        - calendar_days: 207
+                          workdays: 140
+                          business_due_date: "2027-04-01"
+                          due_date: "2027-04-01"
+                          due_principal: 729.94
+                          has_interest: true
+                          post_fixed_amount: 0
+                          pre_fixed_amount: 94.22564648
+                          tax_amount: 8.22329794
+                          total_amount: 578.69
+                          principal_amortization_amount: 484.46435352
+                          installment_number: 1
+                        - calendar_days: 366
+                          workdays: 253
+                          business_due_date: "2028-04-03"
+                          due_date: "2028-04-01"
+                          due_principal: 245.47564648
+                          has_interest: true
+                          post_fixed_amount: 0
+                          pre_fixed_amount: 58.77435352
+                          tax_amount: 7.3470861
+                          total_amount: 304.25
+                          principal_amortization_amount: 245.47564648
+                          installment_number: 2
+                      external_contract_fees:
+                        - fee_type: "tac"
+                          amount_type: "absolute"
+                          amount: 10.0
+                          fee_amount: 10.0
+                          tax_amount: 1.42
+                          net_fee_amount: 8.58
+                          csll_amount: 0
+                          irrf_amount: 0
+                          pis_amount: 0
+                          cofins_amount: 0
+                          amount_released: 8.58
+                          description: null
+                        - fee_type: "spread_tax_free"
+                          amount_type: "absolute"
+                          amount: 0.0
+                          fee_amount: 0.0
+                          tax_amount: 0.0
+                          net_fee_amount: 0.0
+                          csll_amount: 0
+                          irrf_amount: 0
+                          pis_amount: 0
+                          cofins_amount: 0
+                          amount_released: 0
+                          description: null
+                        - fee_type: "tac_tax_free"
+                          amount_type: "absolute"
+                          amount: 0.0
+                          fee_amount: 0.0
+                          tax_amount: 0.0
+                          net_fee_amount: 0.0
+                          csll_amount: 0
+                          irrf_amount: 0
+                          pis_amount: 0
+                          cofins_amount: 0
+                          amount_released: 0
+                          description: null
+                        - fee_type: "insurance_premium"
+                          amount_type: "absolute"
+                          amount: 0.0
+                          fee_amount: 0.0
+                          tax_amount: 0.0
+                          net_fee_amount: 0.0
+                          csll_amount: 0
+                          irrf_amount: 0
+                          pis_amount: 0
+                          cofins_amount: 0
+                          amount_released: 0
+                          description: null
+                      contract_fee_amount: 3.65
+                      external_contract_fee_amount: 10.0
+                      net_external_contract_fee_amount: 8.58
+                      contract_fees:
+                        - fee_type: "spread"
+                          amount_type: "percentage"
+                          amount: 0.5
+                          fee_amount: 3.65
+                        - fee_type: "spread_ted_fee"
+                          amount_type: "absolute"
+                          amount: 3.0
+                          fee_amount: 3.0
+                      issue_amount: 729.94
+                      disbursed_issue_amount: 701.6
+                      assignment_amount: 736.59
+                      disbursement_options:
+                        - iof_amount: 18.34
+                          total_pre_fixed_amount: 153.0
+                          cet: 0.0219
+                          annual_cet: 0.297
+                          contract_fees:
+                            - fee_type: "spread"
+                              amount_type: "percentage"
+                              amount: 0.5
+                              fee_amount: 3.65
+                            - fee_type: "spread_ted_fee"
+                              amount_type: "absolute"
+                              amount: 3.0
+                              fee_amount: 3.0
+                          external_contract_fees:
+                            - fee_type: "tac"
+                              amount_type: "absolute"
+                              amount: 10.0
+                              fee_amount: 10.0
+                              tax_amount: 1.42
+                              net_fee_amount: 8.58
+                              csll_amount: 0.0
+                              irrf_amount: 0.0
+                              pis_amount: 0.0
+                              cofins_amount: 0.0
+                              amount_released: 8.58
+                              description: null
+                            - fee_type: "spread_tax_free"
+                              amount_type: "absolute"
+                              amount: 0.0
+                              fee_amount: 0.0
+                              tax_amount: 0.0
+                              net_fee_amount: 0.0
+                              csll_amount: 0
+                              irrf_amount: 0
+                              pis_amount: 0
+                              cofins_amount: 0
+                              amount_released: 0.0
+                              description: null
+                            - fee_type: "tac_tax_free"
+                              amount_type: "absolute"
+                              amount: 0.0
+                              fee_amount: 0.0
+                              tax_amount: 0.0
+                              net_fee_amount: 0.0
+                              csll_amount: 0
+                              irrf_amount: 0
+                              pis_amount: 0
+                              cofins_amount: 0
+                              amount_released: 0.0
+                              description: null
+                            - fee_type: "insurance_premium"
+                              amount_type: "absolute"
+                              amount: 0.0
+                              fee_amount: 0.0
+                              tax_amount: 0.0
+                              net_fee_amount: 0.0
+                              csll_amount: 0
+                              irrf_amount: 0
+                              pis_amount: 0
+                              cofins_amount: 0
+                              amount_released: 0.0
+                              description: null
+                          contract_fee_amount: 3.65
+                          external_contract_fee_amount: 10.0
+                          net_external_contract_fee_amount: 8.58
+                          disbursement_date: "2026-09-06"
+                          first_due_date: "2027-04-01"
+                          installments:
+                            - calendar_days: 207
+                              workdays: 140
+                              business_due_date: "2027-04-01"
+                              due_date: "2027-04-01"
+                              due_principal: 729.94
+                              has_interest: true
+                              post_fixed_amount: 0
+                              pre_fixed_amount: 94.22564648
+                              tax_amount: 8.22329794
+                              total_amount: 578.69
+                              principal_amortization_amount: 484.46435352
+                              installment_number: 1
+                            - calendar_days: 366
+                              workdays: 253
+                              business_due_date: "2028-04-03"
+                              due_date: "2028-04-01"
+                              due_principal: 245.47564648
+                              has_interest: true
+                              post_fixed_amount: 0
+                              pre_fixed_amount: 58.77435352
+                              tax_amount: 7.3470861
+                              total_amount: 304.25
+                              principal_amortization_amount: 245.47564648
+                              installment_number: 2
+                        issue_amount: 729.94
+                        disbursed_issue_amount: 701.6
+                        assignment_amount: 736.59
+                        final_disbursement_amount: 701.6
+                        prefixed_interest_rate:
+                          interest_base: "calendar_days_365"
+                          annual_rate: 0.23872053
+                          monthly_rate: 0.0179999999
+                          daily_rate: 0.0005866899
+        '400':
+          description: Requisição inválida (campos obrigatórios ausentes ou formato incorreto)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Campo 'financial.monthly_interest_rate' é obrigatório."
+        '422':
+          description: Regra de negócio inválida (parâmetros inconsistentes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Data de primeira parcela menor que a data de desembolso."
+        '500':
+          description: Erro interno no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Falha ao processar a simulação."
 
   dinherow/checkElegibility:
     get:
@@ -418,7 +1080,7 @@ paths:
                         disbursement_key: "bd0ea133-ff47-4a21-a3e6-24186e5e2fc1"
                         contract_number: "4069550961/QIT"
                         requester_key: "1040ce22-aeac-4728-82da-d1f22c33873f"
-                        insurance_policy_document_key: "9990ce22-aeac-4728-82da-d1f22c33873f"
+                        insurance_policy_document_key: "9990ce22-aeac-4728-82da-8a07f7d69079"
                         insurance_date: "2024-09-11"
                         term_start_date: "2024-09-11"
                         term_end_date: "2025-09-11"
@@ -553,7 +1215,6 @@ paths:
                 properties:
                   erro: { type: string }
 
-
   /signVinculo:
     post:
       tags:
@@ -650,6 +1311,4 @@ paths:
                   value:
                     datails: "{\"title\": \"Bad Request\", \"description\": \"'140.282.447-57' does not match '^[0-9]{11}$' in document_number\", \"translation\": \"Payload Invalido\", \"extra_fields\": {}, \"code\": \"QIT000400\"}"
                     error: "Payload Invalido"
-
-
-
+```
