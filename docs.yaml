@@ -828,7 +828,7 @@ paths:
                     type: string
                     example: "Falha ao processar a simulação."
 
-  dinherow/checkElegibility:
+  /dinherow/checkElegibility:
     get:
       tags:
         - Seguro (Insurance)
@@ -925,7 +925,7 @@ paths:
                   erro:
                     type: string
 
-  dinherow/checkInsurance:
+  /dinherow/checkInsurance:
     get:
       tags:
         - Seguro (Insurance)
@@ -1140,7 +1140,7 @@ paths:
                 properties:
                   erro: { type: string }
 
-  dinherow/bill:
+  /dinherow/bill:
     get:
       tags:
         - Seguro (Insurance)
@@ -1290,7 +1290,6 @@ paths:
                   value:
                     employment_relationships_inquiry_key: "ebc45cc3-9cb1-42eb-bd21-2dbe55425c13"
                     employment_relationships_inquiry_status: "pending_authorization"
-
         '400':
           description: Requisição inválida
           content:
