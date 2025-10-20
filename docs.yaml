@@ -9,7 +9,7 @@ tags:
   - name: Consulta de Dívidas
 
 paths:
-  /dinheirow/emiteOperacao:
+  /dinherow/emiteOperacao:
     post:
       tags:
         - Operações
@@ -169,7 +169,7 @@ paths:
         '500':
           description: Erro interno no servidor
 
-  /dinheirow/debtSimulation:
+  /dinherow/debtSimulation:
     post:
       tags:
         - Consulta de Dívidas
@@ -617,7 +617,7 @@ paths:
         '500':
           description: Erro interno no servidor
 
-  /dinheirow/checkElegibility:
+  /dinherow/checkElegibility:
     get:
       tags:
         - Seguro (Insurance)
@@ -655,7 +655,7 @@ paths:
         '500':
           description: Erro interno no servidor
 
-  /dinheirow/checkInsurance:
+  /dinherow/checkInsurance:
     get:
       tags:
         - Seguro (Insurance)
