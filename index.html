@@ -4,36 +4,29 @@
   <meta charset="UTF-8" />
   <title>API Unit - Docs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <link rel="icon" href="data:," /> <!-- evita o 404 do favicon -->
 </head>
+
 <body>
   <div id="swagger-ui"></div>
 
-  <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function () {
-      SwaggerUIBundle({
+      const ui = SwaggerUIBundle({
         urls: [
-          {
-            url: "https://somosunit.github.io/docs/docs.yaml",
-            name: "API Unit - Principal"
-          },
-          {
-            url: "https://somosunit.github.io/docs/selfcheckout.yaml",
-            name: "Self Checkout API"
-          }
+          { url: "./selfcheckout.yaml", name: "Self Checkout API" },
+          { url: "./docs.yaml", name: "API Unit - Principal" }
         ],
         "urls.primaryName": "Self Checkout API",
         dom_id: "#swagger-ui",
         deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis
-        ],
+        presets: [SwaggerUIBundle.presets.apis],
         layout: "BaseLayout"
       });
+
+      window.ui = ui; // só pra debug
     };
   </script>
 </body>
