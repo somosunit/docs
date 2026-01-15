@@ -15,9 +15,10 @@
     window.onload = () => {
       SwaggerUIBundle({
         urls: [
-          { url: 'docs.yaml', name: 'API Unit - Principal' },
-          { url: 'selfcheckout.yaml', name: 'Self Checkout API' }
+          { url: './docs.yaml', name: 'API Unit - Principal' },
+          { url: './selfcheckout.yaml', name: 'Self Checkout API' }
         ],
+        "urls.primaryName": "API Unit - Principal",
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [SwaggerUIBundle.presets.apis],
