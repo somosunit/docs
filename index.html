@@ -5,16 +5,15 @@
   <title>API Unit - Docs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
-  <link rel="icon" href="data:," /> <!-- evita o 404 do favicon -->
+  <link rel="icon" href="data:," /> 
 </head>
-
 <body>
   <div id="swagger-ui"></div>
 
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function () {
-      const ui = SwaggerUIBundle({
+      SwaggerUIBundle({
         urls: [
           { url: "./selfcheckout.yaml", name: "Self Checkout API" },
           { url: "./docs.yaml", name: "API Unit - Principal" }
@@ -25,8 +24,6 @@
         presets: [SwaggerUIBundle.presets.apis],
         layout: "BaseLayout"
       });
-
-      window.ui = ui; // só pra debug
     };
   </script>
 </body>
