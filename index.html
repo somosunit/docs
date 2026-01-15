@@ -1,43 +1,31 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>API Unit - Docs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.18.2/swagger-ui.css" />
-  <link rel="icon" href="data:," />
+  <meta charset="UTF-8">
+  <title>API Unit - Documentacao</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    .swagger-ui .topbar {
-      display: none;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #fafafa; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    h1 { color: #3b4151; margin-bottom: 40px; }
+    .cards { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+    .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px 40px; text-align: center; text-decoration: none; color: #3b4151; transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+    .card h2 { font-size: 20px; margin-bottom: 10px; }
+    .card p { font-size: 14px; color: #666; }
   </style>
 </head>
 <body>
-  <div id="swagger-ui"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.18.2/swagger-ui-bundle.js"></script>
-  <script>
-    window.onload = function() {
-      var defined = window.location.search.match(/definedUrl=([^&]+)/);
-      var url = defined ? decodeURIComponent(defined[1]) : null;
-
-      SwaggerUIBundle({
-        urls: [
-          { url: "selfcheckout.yaml", name: "Self Checkout API" },
-          { url: "docs.yaml", name: "API Unit - Principal" }
-        ],
-        "urls.primaryName": url || "Self Checkout API",
-        dom_id: "#swagger-ui",
-        deepLinking: true,
-        presets: [SwaggerUIBundle.presets.apis],
-        layout: "BaseLayout",
-        validatorUrl: null
-      });
-    };
-  </script>
+  <h1>API Unit - Documentacao</h1>
+  <div class="cards">
+    <a href="selfcheckout.html" class="card">
+      <h2>Self Checkout API</h2>
+      <p>Sistema de autoatendimento de credito consignado</p>
+    </a>
+    <a href="principal.html" class="card">
+      <h2>API Unit - Principal</h2>
+      <p>Endpoints para integracao com a API da UNIT</p>
+    </a>
+  </div>
 </body>
 </html>
