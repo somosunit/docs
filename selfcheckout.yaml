@@ -13,6 +13,8 @@ tags:
     description: Endpoints para analise e concessao de credito
   - name: Contrato
     description: Endpoints para geracao de contratos
+  - name: Simulacao
+    description: Endpoints para simulacao de operacoes de credito
 
 securityDefinitions:
   InternalToken:
@@ -991,6 +993,106 @@ paths:
                 type: string
         "500":
           description: Erro ao assinar contrato
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              msg:
+                type: string
+              details:
+                type: object
+
+  /simularCredito:
+    post:
+      tags:
+        - Simulacao
+      summary: Simula uma operacao de credito consignado
+      description: |
+        Realiza simulacao de credito consignado retornando valores de parcelas,
+        taxas e condicoes disponiveis para o cliente.
+      security:
+        - InternalToken: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - cpf
+              - valor_solicitado
+              - prazo
+            properties:
+              cpf:
+                type: string
+                description: CPF do cliente
+                example: "12345678900"
+              valor_solicitado:
+                type: number
+                description: Valor solicitado pelo cliente
+                example: 5000.00
+              prazo:
+                type: integer
+                description: Quantidade de parcelas desejadas
+                example: 24
+              employer_document_number:
+                type: string
+                description: CNPJ do empregador (opcional)
+                example: "12345678000199"
+      responses:
+        "200":
+          description: Simulacao realizada com sucesso
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  valor_solicitado:
+                    type: number
+                    example: 5000.00
+                  valor_parcela:
+                    type: number
+                    example: 250.00
+                  taxa_mensal:
+                    type: number
+                    example: 0.0199
+                  taxa_anual:
+                    type: number
+                    example: 0.2388
+                  cet_mensal:
+                    type: number
+                    example: 0.0215
+                  cet_anual:
+                    type: number
+                    example: 0.2588
+                  prazo:
+                    type: integer
+                    example: 24
+                  valor_total:
+                    type: number
+                    example: 6000.00
+        "400":
+          description: Erro de validacao
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              msg:
+                type: string
+        "500":
+          description: Erro ao realizar simulacao
           schema:
             type: object
             properties:
