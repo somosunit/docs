@@ -14,7 +14,10 @@
   <script>
     window.onload = () => {
       SwaggerUIBundle({
-        url: 'docs.yaml',          // se o arquivo estiver na raiz
+        urls: [
+          { url: 'docs.yaml', name: 'API Unit - Principal' },
+          { url: 'selfcheckout.yaml', name: 'Self Checkout API' }
+        ],
         dom_id: '#swagger-ui',
         deepLinking: true,
         presets: [SwaggerUIBundle.presets.apis],
