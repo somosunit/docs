@@ -16,7 +16,7 @@ tags:
   - name: Simulacao
     description: Endpoints para simulacao de operacoes de credito
   - name: Proposta
-    description: Endpoints para geracao e consulta de propostas de credito
+    description: Endpoints para pegar a melhor proposta de credito para um cliente
 
 securityDefinitions:
   InternalToken:
@@ -1116,14 +1116,6 @@ paths:
         a melhor proposta de credito disponivel, incluindo informacoes
         sobre o cliente como score de credito, debitos e margem considerada.
 
-        Regras de negocio:
-        - [PREENCHER: descrever regras de negocio aplicadas na analise]
-        - [PREENCHER: criterios para selecao da melhor proposta]
-        - [PREENCHER: regras de aprovacao/reprovacao]
-
-        Resultados possiveis:
-        - approved: Proposta aprovada com sucesso
-        - [PREENCHER: outros status possiveis - rejected, pending, etc.]
       security:
         - InternalToken: []
       consumes:
