@@ -15,6 +15,8 @@ tags:
     description: Endpoints para geracao de contratos
   - name: Simulacao
     description: Endpoints para simulacao de operacoes de credito
+  - name: Proposta
+    description: Endpoints para geracao e consulta de propostas de credito
 
 securityDefinitions:
   InternalToken:
@@ -1101,5 +1103,242 @@ paths:
                 example: false
               msg:
                 type: string
+              details:
+                type: object
+
+  /proposal:
+    post:
+      tags:
+        - Proposta
+      summary: Retorna a melhor proposta de credito para o cliente
+      description: |
+        Endpoint responsavel por analisar os dados do cliente e retornar
+        a melhor proposta de credito disponivel, incluindo informacoes
+        sobre o cliente como score de credito, debitos e margem considerada.
+
+        Regras de negocio:
+        - [PREENCHER: descrever regras de negocio aplicadas na analise]
+        - [PREENCHER: criterios para selecao da melhor proposta]
+        - [PREENCHER: regras de aprovacao/reprovacao]
+
+        Resultados possiveis:
+        - approved: Proposta aprovada com sucesso
+        - [PREENCHER: outros status possiveis - rejected, pending, etc.]
+      security:
+        - InternalToken: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Dados do cliente para analise de proposta
+          required: true
+          schema:
+            type: object
+            required:
+              - employer_activity_time
+              - employed_time
+              - cnpj
+              - cnae
+              - cbo
+              - funding
+              - margin
+              - salary
+              - cpf
+            properties:
+              employer_activity_time:
+                type: integer
+                description: Tempo de atividade da empresa empregadora em meses
+                example: 319
+              employed_time:
+                type: integer
+                description: Tempo de vinculo empregaticio do cliente em meses
+                example: 31
+              cnpj:
+                type: string
+                description: CNPJ do empregador (raiz - 8 digitos)
+                example: "03252367"
+              cnae:
+                type: string
+                description: Codigo CNAE da atividade economica
+                example: "4221902"
+              cbo:
+                type: string
+                description: Codigo CBO da ocupacao
+                example: "7156"
+              funding:
+                type: string
+                description: CNPJ do fundo financiador
+                example: "61452743000197"
+              margin:
+                type: number
+                description: Margem consignavel disponivel
+                example: 140.12
+              salary:
+                type: number
+                description: Salario bruto do cliente
+                example: 2341.21
+              cpf:
+                type: string
+                description: CPF do cliente (apenas numeros)
+                example: "18488779780"
+      responses:
+        "200":
+          description: Proposta gerada com sucesso
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  cpf:
+                    type: string
+                    description: CPF do cliente
+                    example: "18488779780"
+                  result:
+                    type: string
+                    description: Resultado da analise
+                    enum:
+                      - approved
+                      # [PREENCHER: adicionar outros status possiveis]
+                    example: "approved"
+                  detail:
+                    type: string
+                    description: Mensagem descritiva do resultado
+                    example: "Proposta aprovada com sucesso"
+                  funding:
+                    type: string
+                    description: CNPJ do fundo financiador
+                    example: "61452743000197"
+                  funding_name:
+                    type: string
+                    description: Nome do fundo financiador
+                    example: "Piemonte"
+                  simulation_id:
+                    type: string
+                    format: uuid
+                    description: Identificador unico da simulacao
+                    example: "fe26d4fc-d4c3-42ad-bcef-46e461d4ef03"
+                  best_proposal:
+                    type: object
+                    description: Dados da melhor proposta encontrada
+                    properties:
+                      value:
+                        type: number
+                        description: Valor total do credito
+                        example: 768.935
+                      term:
+                        type: integer
+                        description: Prazo em meses (numero de parcelas)
+                        example: 12
+                      rate:
+                        type: number
+                        description: Taxa de juros mensal (decimal)
+                        example: 0.0699
+                      installment_value:
+                        type: number
+                        description: Valor da parcela mensal
+                        example: 108.67
+                      has_insurance:
+                        type: boolean
+                        description: Indica se a proposta inclui seguro
+                        example: false
+                  max_disbursement:
+                    type: object
+                    description: Valores maximos de desembolso
+                    properties:
+                      without_insurance:
+                        type: number
+                        description: Valor maximo sem seguro
+                        example: 768.935
+                      # [PREENCHER: adicionar with_insurance se aplicavel]
+                  client_data:
+                    type: object
+                    description: Dados do cliente utilizados na analise
+                    properties:
+                      salary:
+                        type: number
+                        description: Salario do cliente
+                        example: 2341.21
+                      margin_considered:
+                        type: number
+                        description: Margem efetivamente considerada na analise
+                        example: 119.102
+                      employed_time:
+                        type: integer
+                        description: Tempo de vinculo em meses
+                        example: 31
+                      cnpj_employer:
+                        type: string
+                        description: CNPJ do empregador
+                        example: "03252367"
+                      credit_score:
+                        type: integer
+                        description: Score de credito calculado
+                        example: 50
+                      has_debits:
+                        type: boolean
+                        description: Indica se o cliente possui debitos
+                        example: true
+                      debits:
+                        type: number
+                        description: Valor total de debitos
+                        example: 401.67
+                      clean_name:
+                        type: boolean
+                        description: Indica se o cliente possui nome limpo (sem restricoes)
+                        example: false
+        "400":
+          description: Erro de validacao
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              msg:
+                type: string
+                enum:
+                  - Requisicao deve ser em formato JSON
+                  - Campo 'employer_activity_time' e obrigatorio
+                  - Campo 'employed_time' e obrigatorio
+                  - Campo 'cnpj' e obrigatorio
+                  - Campo 'cnae' e obrigatorio
+                  - Campo 'cbo' e obrigatorio
+                  - Campo 'funding' e obrigatorio
+                  - Campo 'margin' e obrigatorio
+                  - Campo 'salary' e obrigatorio
+                  - Campo 'cpf' e obrigatorio
+                  - CPF invalido
+                  - CNPJ invalido
+                  # [PREENCHER: adicionar outras mensagens de erro se houver]
+        "404":
+          description: Nenhuma proposta disponivel
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              msg:
+                type: string
+                example: "Nenhuma proposta disponivel para o cliente"
+              # [PREENCHER: ajustar mensagem conforme necessario]
+        "500":
+          description: Erro interno ao processar proposta
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              msg:
+                type: string
+                example: "Erro ao processar proposta de credito"
               details:
                 type: object
