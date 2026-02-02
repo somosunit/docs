@@ -936,77 +936,7 @@ paths:
                 type: string
                 example: "Nenhum contrato encontrado para o CPF informado"
 
-  /signContract:
-    post:
-      tags:
-        - Contrato
-      summary: Envia assinatura do contrato
-      description: |
-        Envia a assinatura eletronica do cliente para o contrato.
-      security:
-        - InternalToken: []
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: body
-          required: true
-          schema:
-            type: object
-            required:
-              - cpf
-              - contract_key
-              - ip
-            properties:
-              cpf:
-                type: string
-                description: CPF do cliente
-                example: "12345678900"
-              contract_key:
-                type: string
-                description: Chave do contrato
-                example: "abc123"
-              ip:
-                type: string
-                description: IP do cliente
-                example: "193.186.4.237"
-      responses:
-        "200":
-          description: Contrato assinado com sucesso
-          schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                example: true
-              data:
-                type: object
-        "400":
-          description: Erro de validacao
-          schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                example: false
-              msg:
-                type: string
-        "500":
-          description: Erro ao assinar contrato
-          schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-                example: false
-              msg:
-                type: string
-              details:
-                type: object
-
-  /simularCredito:
+  /simulation:
     post:
       tags:
         - Simulacao
@@ -1027,26 +957,23 @@ paths:
           schema:
             type: object
             required:
-              - cpf
-              - valor_solicitado
-              - prazo
+              - disbursement_date
+              - value
+              - number_of_installments
             properties:
-              cpf:
+              disbursement_date:
                 type: string
-                description: CPF do cliente
-                example: "12345678900"
-              valor_solicitado:
+                format: date
+                description: Data de desembolso (YYYY-MM-DD)
+                example: "2025-02-02"
+              value:
                 type: number
-                description: Valor solicitado pelo cliente
-                example: 5000.00
-              prazo:
+                description: Valor a ser simulado
+                example: 1100.0
+              number_of_installments:
                 type: integer
-                description: Quantidade de parcelas desejadas
-                example: 24
-              employer_document_number:
-                type: string
-                description: CNPJ do empregador (opcional)
-                example: "12345678000199"
+                description: Numero de parcelas
+                example: 12
       responses:
         "200":
           description: Simulacao realizada com sucesso
